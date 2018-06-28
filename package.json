@@ -1,0 +1,32 @@
+{
+  "name": "meme-game",
+  "version": "1.0.0",
+  "description": "A series of games about meme",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RSzyh/meme-game.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RSzyh/meme-game/issues"
+  },
+  "homepage": "https://github.com/RSzyh/meme-game#readme",
+  "devDependencies": {
+    "tslint": "^5.10.0",
+    "tslint-loader": "^3.6.0",
+    "webpack": "^4.12.2",
+    "webpack-cli": "^3.0.8"
+  },
+  "dependencies": {
+    "ts-loader": "^4.4.2",
+    "typescript": "^2.9.2"
+  }
+}
