@@ -1,3 +1,6 @@
+import Main from "./Main";
+
 window.onload = () => {
-  console.log('Hello world');
+  const main: Main = new Main();
+  main.createScene();
 };
