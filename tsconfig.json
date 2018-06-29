@@ -1,6 +1,6 @@
 {
     "files": [
-    	"./src/Entry.ts"
+    	"./src/Loading.ts"
     ],
     "compilerOptions": {
 	"outDir": "./dist/",

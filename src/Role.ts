@@ -1,25 +1,29 @@
 export default class Role {
-  // element properties
-  private _height: number;
-  private _width: number;
-  private _x: number;
-  private _y: number;
+  public images: {[key: string]: HTMLImageElement};
+  // canvas
+  public canvas: HTMLCanvasElement;
+  public ctx: CanvasRenderingContext2D;
   // basic properties
-  private _status: string; // left, right, up, down and blabla(default left)
   public healthPoint: number;
   public maxHealthPoint: number;
   public attackPower: number;
   public moveSpeed: number;
   public jumpSpeed: number;
+  private selfStatus: string; // left, right, up, down and blabla(default left)
+  // element properties
+  private selfHeight: number;
+  private selfWidth: number;
+  private selfX: number;
+  private selfY: number;
 
   constructor(data: {[key: string]: number}) {
     // element properties
-    this._height = data.height;
-    this._width = data.width;
-    this._x = data.x;
-    this._y = data.y;
+    this.selfHeight = data.height;
+    this.selfWidth = data.width;
+    this.selfX = data.x;
+    this.selfY = data.y;
     // basic properties
-    this._status = 'left';
+    this.selfStatus = "left";
     this.healthPoint = this.maxHealthPoint = data.maxHealthPoint;
     this.attackPower = data.attackPower;
     this.moveSpeed = data.moveSpeed;
@@ -28,41 +32,48 @@ export default class Role {
 
   // element properties setter & getter
   public get x(): number {
-    return this._x;
+    return this.selfX;
   }
   public set x(x: number) {
-    this._x  = x;
+    this.selfX  = x;
   }
 
   public get y(): number {
-    return this._y;
+    return this.selfY;
   }
   public set y(y: number) {
-    this._y  = y;
+    this.selfY  = y;
   }
 
   public get height(): number {
-    return this._height;
+    return this.selfHeight;
   }
   public set height(height: number) {
-    this._height  = height;
+    this.selfHeight  = height;
   }
 
   public get width(): number {
-    return this._width;
+    return this.selfWidth;
   }
   public set width(width: number) {
-    this._width  = width;
+    this.selfWidth  = width;
   }
 
   public get status(): string {
-    return this._status;
+    return this.selfStatus;
   }
   public set status(status: string) {
-    this._status  = status;
+    this.selfStatus  = status;
   }
 
   // rendering
   public render() {
+    this.ctx.drawImage(
+      this.images[this.selfStatus],
+      this.selfX,
+      this.selfY,
+      this.selfWidth,
+      this.selfHeight,
+    );
   }
 }
