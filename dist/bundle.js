@@ -81,20 +81,20 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/Entry.ts");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/Loading.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/Entry.ts":
-/*!**********************!*\
-  !*** ./src/Entry.ts ***!
-  \**********************/
+/***/ "./src/Loading.ts":
+/*!************************!*\
+  !*** ./src/Loading.ts ***!
+  \************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar Main_1 = __webpack_require__(/*! ./Main */ \"./src/Main.ts\");\nwindow.onload = function () {\n    var main = new Main_1.default();\n    main.createScene();\n};\n\n\n//# sourceURL=webpack:///./src/Entry.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar Main_1 = __webpack_require__(/*! ./Main */ \"./src/Main.ts\");\nwindow.onload = function () {\n    var main = new Main_1.default();\n    main.createScene();\n};\n\n\n//# sourceURL=webpack:///./src/Loading.ts?");
 
 /***/ }),
 

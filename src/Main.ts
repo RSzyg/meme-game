@@ -1,3 +1,5 @@
+import Role from "./Role";
+
 export default class Main {
   private height: number = 600;
   private width: number = 800;
