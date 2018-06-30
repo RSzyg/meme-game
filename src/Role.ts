@@ -6,13 +6,17 @@ export default class Role {
     public maxHealthPoint: number;
     public attackPower: number;
     public moveSpeed: number;
+    public initJumpSpeed: number;
     public jumpSpeed: number;
     private selfStatus: string; // left, right, up, down and blabla(default left)
+    private tempStatus: string;
     // element properties
     private selfHeight: number;
     private selfWidth: number;
     private selfX: number;
     private selfY: number;
+    // timer
+    private verticalTimer: number;
 
     constructor(data: { [key: string]: number }) {
         // element properties
@@ -22,10 +26,13 @@ export default class Role {
         this.selfY = data.y;
         // basic properties
         this.selfStatus = "left";
+        this.tempStatus = "left";
         this.healthPoint = this.maxHealthPoint = data.maxHealthPoint;
         this.attackPower = data.attackPower;
         this.moveSpeed = data.moveSpeed;
-        this.jumpSpeed = data.jumpSpeed;
+        this.initJumpSpeed = this.jumpSpeed = data.jumpSpeed;
+        // timer
+        this.verticalTimer = undefined;
     }
 
     // element properties setter & getter
@@ -89,23 +96,47 @@ export default class Role {
     // move
     public move(dir: string) {
         this.remove();
-        this.status = dir;
+        if (!this.verticalTimer) {
+            this.status = dir;
+        }
         switch (dir) {
             case "up":
+                this.status = dir;
+                this.selfY -= this.jumpSpeed;
+                this.jumpSpeed--;
+                if (this.jumpSpeed === -(this.initJumpSpeed + 1)) {
+                    clearInterval(this.verticalTimer);
+                    this.verticalTimer = undefined;
+                    this.status = this.tempStatus;
+                }
                 break;
             case "down":
+                this.status = dir;
                 break;
             case "left":
+                this.tempStatus = dir;
                 this.selfX -= this.moveSpeed;
                 break;
             case "right":
+                this.tempStatus = dir;
                 this.selfX += this.moveSpeed;
                 break;
             default:
                 break;
         }
-        const mid = this.selfWidth / 2
-        this.selfX = (this.selfX + mid + Storage.sceneWidth) % Storage.sceneWidth - mid;
+        const midWidth = this.selfWidth / 2;
+        const midHeight = this.selfHeight / 2;
+        this.selfX = (this.selfX + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
+        this.selfY = (this.selfY + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
         this.render();
+    }
+
+    // jump
+    public jump() {
+        if (!this.verticalTimer) {
+            this.tempStatus = this.status;
+            this.jumpSpeed = this.initJumpSpeed;
+            this.verticalTimer = setInterval(() => this.move("up"), 17);
+        }
     }
 }

@@ -41,7 +41,7 @@ export default class Main {
             maxHealthPoint: 100,
             attackPower: 3,
             moveSpeed: 4,
-            jumpSpeed: 10,
+            jumpSpeed: 18,
         };
         this.roles[id] = new Role(data);
         this.roles[id].render();
@@ -53,7 +53,7 @@ export default class Main {
                 case 38:
                     if (!this.up) {
                         this.up = setInterval(
-                            () => this.roles["0"].move("up"),
+                            () => this.roles["0"].jump(),
                             this.interval,
                         );
                     }
