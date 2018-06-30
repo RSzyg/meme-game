@@ -1,8 +1,6 @@
+import Storage from "./Storage";
+
 export default class Role {
-    public images: { [key: string]: HTMLImageElement };
-    // canvas
-    public canvas: HTMLCanvasElement;
-    public ctx: CanvasRenderingContext2D;
     // basic properties
     public healthPoint: number;
     public maxHealthPoint: number;
@@ -68,8 +66,8 @@ export default class Role {
 
     // rendering
     public render() {
-        this.ctx.drawImage(
-            this.images[this.selfStatus],
+        Storage.ctx.drawImage(
+            Storage.images[this.selfStatus],
             this.selfX,
             this.selfY,
             this.selfWidth,
@@ -79,8 +77,8 @@ export default class Role {
 
     // remove
     public remove() {
-        this.ctx.fillStyle = "#C0C0C0";
-        this.ctx.fillRect(
+        Storage.ctx.fillStyle = "#C0C0C0";
+        Storage.ctx.fillRect(
             this.selfX,
             this.selfY,
             this.selfWidth,
@@ -106,6 +104,7 @@ export default class Role {
             default:
                 break;
         }
+        this.selfX = (this.selfX + this.selfWidth / 2 + Storage.sceneWidth) % Storage.sceneWidth - this.selfWidth / 2;
         this.render();
     }
 }

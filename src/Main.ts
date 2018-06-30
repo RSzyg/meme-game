@@ -1,11 +1,7 @@
 import Role from "./Role";
+import Storage from "./Storage";
 
 export default class Main {
-    public images: { [key: string]: HTMLImageElement };
-    private canvasHeight: number = 600;
-    private canvasWidth: number = 800;
-    private canvas: HTMLCanvasElement;
-    private ctx: CanvasRenderingContext2D;
     private map: number[];
     private roles: {[key: string]: Role};
     private interval: number = 17;
@@ -15,12 +11,6 @@ export default class Main {
     private left: number;
     private right: number;
     constructor() {
-        this.images = {};
-        this.canvas = document.createElement("canvas");
-        this.canvas.height = this.canvasHeight;
-        this.canvas.width = this.canvasWidth;
-        document.getElementById("display").appendChild(this.canvas);
-        this.ctx = this.canvas.getContext("2d");
         this.map = [];
         this.roles = {};
         // keyboardRecorder
@@ -31,6 +21,11 @@ export default class Main {
     }
 
     public createScene() {
+        Storage.canvas = document.createElement("canvas");
+        Storage.canvas.height = Storage.sceneHeight;
+        Storage.canvas.width = Storage.sceneWidth;
+        document.getElementById("display").appendChild(Storage.canvas);
+        Storage.ctx = Storage.canvas.getContext("2d");
         this.createRole("0");
 
         document.addEventListener("keydown", (e) => this.keyboardController(e));
@@ -42,16 +37,13 @@ export default class Main {
             width: 54,
             height: 54,
             x: 0,
-            y: this.canvasHeight - 54,
+            y: Storage.sceneHeight - 54,
             maxHealthPoint: 100,
             attackPower: 3,
             moveSpeed: 4,
             jumpSpeed: 10,
         };
         this.roles[id] = new Role(data);
-        this.roles[id].images = this.images;
-        this.roles[id].canvas = this.canvas;
-        this.roles[id].ctx = this.ctx;
         this.roles[id].render();
     }
 

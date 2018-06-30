@@ -1,4 +1,5 @@
 import Main from "./Main";
+import Storage from "./Storage";
 
 window.onload = () => {
     const main: Main = new Main();
@@ -15,11 +16,11 @@ window.onload = () => {
     for (let i = 0; i < total; i++) {
         const path: string = imgSrcArr[i];
         name = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
-        main.images[name] = new Image();
-        main.images[name].src = imgSrcArr[i];
-        main.images[name].style.width = "54px";
-        main.images[name].style.height = "54px";
-        main.images[name].onload = () => {
+        Storage.images[name] = new Image();
+        Storage.images[name].src = imgSrcArr[i];
+        Storage.images[name].style.width = "54px";
+        Storage.images[name].style.height = "54px";
+        Storage.images[name].onload = () => {
             current++;
             if (current === total) {
                 main.createScene();
