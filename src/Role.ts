@@ -104,7 +104,8 @@ export default class Role {
             default:
                 break;
         }
-        this.selfX = (this.selfX + this.selfWidth / 2 + Storage.sceneWidth) % Storage.sceneWidth - this.selfWidth / 2;
+        const mid = this.selfWidth / 2
+        this.selfX = (this.selfX + mid + Storage.sceneWidth) % Storage.sceneWidth - mid;
         this.render();
     }
 }
