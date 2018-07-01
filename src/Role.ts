@@ -77,7 +77,7 @@ export default class Role {
 
     // rendering
     public render() {
-        Storage.ctx.drawImage(
+        Storage.roleCtx.drawImage(
             Storage.images[this.selfStatus],
             this.selfX,
             this.selfY,

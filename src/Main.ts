@@ -10,15 +10,38 @@ export default class Main {
     }
 
     public createScene() {
-        Storage.canvas = document.createElement("canvas");
-        Storage.canvas.height = Storage.sceneHeight;
-        Storage.canvas.width = Storage.sceneWidth;
-        document.getElementById("display").appendChild(Storage.canvas);
-        Storage.ctx = Storage.canvas.getContext("2d");
+        // create map canvas
+        Storage.mapCanvas = document.createElement("canvas");
+        Storage.mapCanvas.style.zIndex = "99";
+        Storage.mapCanvas.style.position = "absolute";
+        Storage.mapCanvas.height = Storage.sceneHeight;
+        Storage.mapCanvas.width = Storage.sceneWidth;
+        document.getElementById("display").appendChild(Storage.mapCanvas);
+        Storage.mapCtx = Storage.mapCanvas.getContext("2d");
+        this.renderMap();
+        // create roles canvas
+        Storage.roleCanvas = document.createElement("canvas");
+        Storage.roleCanvas.style.zIndex = "10";
+        Storage.roleCanvas.style.position = "absolute";
+        Storage.roleCanvas.height = Storage.sceneHeight;
+        Storage.roleCanvas.width = Storage.sceneWidth;
+        document.getElementById("display").appendChild(Storage.roleCanvas);
+        Storage.roleCtx = Storage.roleCanvas.getContext("2d");
         this.createRole("0");
 
         document.addEventListener("keydown", (e) => this.keyboardController(e));
         document.addEventListener("keyup", (e) => this.keyboardController(e));
+    }
+
+    private renderMap() {
+        for (let r = 0; r < Storage.simplifiedMap.length; r++) {
+            for (let c = 0; c < Storage.simplifiedMap[r].length; c++) {
+                if (Storage.simplifiedMap[r][c] === 1) {
+                    Storage.mapCtx.fillStyle = "#ffffff";
+                    Storage.mapCtx.fillRect(c * 40, r * 40, 40, 40);
+                }
+            }
+        }
     }
 
     private createRole(id: string) {
@@ -30,7 +53,7 @@ export default class Main {
             maxHealthPoint: 100,
             attackPower: 3,
             moveSpeed: 4,
-            jumpSpeed: 20,
+            jumpSpeed: 19,
         };
         this.roles[id] = new Role(data);
         this.update();
@@ -45,8 +68,8 @@ export default class Main {
     }
 
     private clearRoles() {
-        Storage.ctx.fillStyle = "#C0C0C0";
-        Storage.ctx.fillRect(0, 0, Storage.sceneWidth, Storage.sceneHeight);
+        Storage.roleCtx.fillStyle = "#C0C0C0";
+        Storage.roleCtx.fillRect(0, 0, Storage.sceneWidth, Storage.sceneHeight);
     }
 
     private update() {
