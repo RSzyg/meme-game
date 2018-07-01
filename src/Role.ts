@@ -86,14 +86,13 @@ export default class Role {
         );
     }
 
-    // remove
-    public remove() {
-        Storage.ctx.fillStyle = "#C0C0C0";
-        Storage.ctx.fillRect(
-            this.selfX,
-            this.selfY,
-            this.selfWidth,
-            this.selfHeight,
-        );
+    // move
+    public move(k: number) {
+        this.y += Storage.dy[k] * this.jumpSpeed;
+        this.x += Storage.dx[k] * this.moveSpeed;
+        const midWidth = this.width / 2;
+        const midHeight = this.height / 2;
+        this.x = (this.x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
+        this.y = (this.y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
     }
 }

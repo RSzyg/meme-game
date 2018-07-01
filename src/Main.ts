@@ -56,17 +56,13 @@ export default class Main {
         this.clearRoles();
         if (this.keydown[37]) {
             this.roles["0"].status = "left";
-            this.roles["0"].x -= this.roles["0"].moveSpeed;
+            this.roles["0"].move(2);
         }
         if (this.keydown[39]) {
             this.roles["0"].status = "right";
-            this.roles["0"].x += this.roles["0"].moveSpeed;
+            this.roles["0"].move(3);
         }
-        const midWidth = this.roles["0"].width / 2;
-        const midHeight = this.roles["0"].height / 2;
-        this.roles["0"].x = (this.roles["0"].x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
-        this.roles["0"].y = (this.roles["0"].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
-        this.roles["0"].render();
         requestAnimationFrame(() => this.update());
+        this.roles["0"].render();
     }
 }
