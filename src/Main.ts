@@ -56,13 +56,23 @@ export default class Main {
         this.clearRoles();
         if (this.keydown[37]) {
             this.roles["0"].status = "left";
-            this.roles["0"].move(2);
+            this.roles["0"].move(0);
+        }
+        if (this.keydown[38]) {
+            this.roles["0"].verticalTimer = true;
+        }
+        if (this.roles["0"].verticalTimer) {
+            this.roles["0"].jumpSpeed--;
+            this.roles["0"].move(1);
         }
         if (this.keydown[39]) {
             this.roles["0"].status = "right";
-            this.roles["0"].move(3);
+            this.roles["0"].move(2);
         }
-        requestAnimationFrame(() => this.update());
+        if (this.keydown[40]) {
+            console.log("down");
+        }
         this.roles["0"].render();
+        requestAnimationFrame(() => this.update());
     }
 }

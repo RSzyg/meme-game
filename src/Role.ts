@@ -3,6 +3,8 @@ import Storage from "./Storage";
 export default class Role {
     // keyboardRecorder
     public keyboardRecorder: {[key: string]: number};
+    // timer
+    public verticalTimer: boolean;
     // basic properties
     public healthPoint: number;
     public maxHealthPoint: number;
@@ -17,12 +19,12 @@ export default class Role {
     private selfWidth: number;
     private selfX: number;
     private selfY: number;
-    // timer
-    private verticalTimer: number;
 
     constructor(data: { [key: string]: number }) {
         // keyboardRecorder
         this.keyboardRecorder = {};
+        // timer
+        this.verticalTimer = false;
         // element properties
         this.selfHeight = data.height;
         this.selfWidth = data.width;
@@ -35,8 +37,6 @@ export default class Role {
         this.attackPower = data.attackPower;
         this.moveSpeed = data.moveSpeed;
         this.initJumpSpeed = this.jumpSpeed = data.jumpSpeed;
-        // timer
-        this.verticalTimer = undefined;
     }
 
     // element properties setter & getter
@@ -94,5 +94,14 @@ export default class Role {
         const midHeight = this.height / 2;
         this.x = (this.x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
         this.y = (this.y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
+        this.hitController();
+    }
+
+    // handle while hit
+    public hitController() {
+        if (this.y + this.height >= Storage.sceneHeight) {
+            this.jumpSpeed = this.initJumpSpeed;
+            this.verticalTimer = false;
+        }
     }
 }
