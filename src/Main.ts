@@ -2,12 +2,9 @@ import Role from "./Role";
 import Storage from "./Storage";
 
 export default class Main {
-    private map: number[];
     private roles: {[key: string]: Role};
-    private interval: number = 17;
     private keydown: {[key: number]: boolean};
     constructor() {
-        this.map = [];
         this.roles = {};
         this.keydown = {};
     }
@@ -59,7 +56,10 @@ export default class Main {
             this.roles["0"].move(0);
         }
         if (this.keydown[38]) {
-            this.roles["0"].verticalTimer = true;
+            if (!this.roles["0"].verticalTimer) {
+                this.roles["0"].jumpSpeed = this.roles["0"].initJumpSpeed;
+                this.roles["0"].verticalTimer = true;
+            }
         }
         if (this.roles["0"].verticalTimer) {
             this.roles["0"].jumpSpeed--;

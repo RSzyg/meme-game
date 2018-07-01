@@ -100,7 +100,6 @@ export default class Role {
     // handle while hit
     public hitController() {
         if (this.y + this.height >= Storage.sceneHeight) {
-            this.jumpSpeed = this.initJumpSpeed;
             this.verticalTimer = false;
         }
     }
