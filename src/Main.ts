@@ -5,19 +5,11 @@ export default class Main {
     private map: number[];
     private roles: {[key: string]: Role};
     private interval: number = 17;
-    // keyboardRecorder
-    private up: number;
-    private down: number;
-    private left: number;
-    private right: number;
+    private keydown: {[key: number]: boolean};
     constructor() {
         this.map = [];
         this.roles = {};
-        // keyboardRecorder
-        this.up = undefined;
-        this.down = undefined;
-        this.left = undefined;
-        this.right = undefined;
+        this.keydown = {};
     }
 
     public createScene() {
@@ -41,75 +33,40 @@ export default class Main {
             maxHealthPoint: 100,
             attackPower: 3,
             moveSpeed: 4,
-            jumpSpeed: 18,
+            jumpSpeed: 20,
         };
         this.roles[id] = new Role(data);
-        this.roles[id].render();
+        this.update();
     }
 
     private keyboardController(e: KeyboardEvent) {
         if (e.type === "keydown") {
-            switch (e.keyCode) {
-                case 38:
-                    if (!this.up) {
-                        this.up = setInterval(
-                            () => this.roles["0"].jump(),
-                            this.interval,
-                        );
-                    }
-                    break;
-                case 40:
-                    if (!this.down) {
-                        this.down = setInterval(
-                            () => this.roles["0"].move("down"),
-                            this.interval,
-                        );
-                    }
-                    break;
-                case 37:
-                    if (!this.left) {
-                        this.left = setInterval(
-                            () => this.roles["0"].move("left"),
-                            this.interval,
-                        );
-                    }
-                    break;
-                case 39:
-                    if (!this.right) {
-                        this.right = setInterval(
-                            () => this.roles["0"].move("right"),
-                            this.interval,
-                        );
-                    }
-                    break;
-                case 88:
-                    break;
-                default:
-                    break;
-            }
+            this.keydown[e.keyCode] = true;
         } else if (e.type === "keyup") {
-            switch (e.keyCode) {
-                case 38:
-                    clearInterval(this.up);
-                    this.up = undefined;
-                    break;
-                case 40:
-                    clearInterval(this.down);
-                    this.down = undefined;
-                    break;
-                case 37:
-                    clearInterval(this.left);
-                    this.left = undefined;
-                    break;
-                case 39:
-                    clearInterval(this.right);
-                    this.right = undefined;
-                    break;
-                case 88:
-                    break;
-                default:
-                    break;
-            }
+            this.keydown[e.keyCode] = false;
         }
+    }
+
+    private clearRoles() {
+        Storage.ctx.fillStyle = "#C0C0C0";
+        Storage.ctx.fillRect(0, 0, Storage.sceneWidth, Storage.sceneHeight);
+    }
+
+    private update() {
+        this.clearRoles();
+        if (this.keydown[37]) {
+            this.roles["0"].status = "left";
+            this.roles["0"].x -= this.roles["0"].moveSpeed;
+        }
+        if (this.keydown[39]) {
+            this.roles["0"].status = "right";
+            this.roles["0"].x += this.roles["0"].moveSpeed;
+        }
+        const midWidth = this.roles["0"].width / 2;
+        const midHeight = this.roles["0"].height / 2;
+        this.roles["0"].x = (this.roles["0"].x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
+        this.roles["0"].y = (this.roles["0"].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
+        this.roles["0"].render();
+        requestAnimationFrame(() => this.update());
     }
 }

@@ -1,6 +1,8 @@
 import Storage from "./Storage";
 
 export default class Role {
+    // keyboardRecorder
+    public keyboardRecorder: {[key: string]: number};
     // basic properties
     public healthPoint: number;
     public maxHealthPoint: number;
@@ -19,6 +21,8 @@ export default class Role {
     private verticalTimer: number;
 
     constructor(data: { [key: string]: number }) {
+        // keyboardRecorder
+        this.keyboardRecorder = {};
         // element properties
         this.selfHeight = data.height;
         this.selfWidth = data.width;
@@ -91,52 +95,5 @@ export default class Role {
             this.selfWidth,
             this.selfHeight,
         );
-    }
-
-    // move
-    public move(dir: string) {
-        this.remove();
-        if (!this.verticalTimer) {
-            this.status = dir;
-        }
-        switch (dir) {
-            case "up":
-                this.status = dir;
-                this.selfY -= this.jumpSpeed;
-                this.jumpSpeed--;
-                if (this.jumpSpeed === -(this.initJumpSpeed + 1)) {
-                    clearInterval(this.verticalTimer);
-                    this.verticalTimer = undefined;
-                    this.status = this.tempStatus;
-                }
-                break;
-            case "down":
-                this.status = dir;
-                break;
-            case "left":
-                this.tempStatus = dir;
-                this.selfX -= this.moveSpeed;
-                break;
-            case "right":
-                this.tempStatus = dir;
-                this.selfX += this.moveSpeed;
-                break;
-            default:
-                break;
-        }
-        const midWidth = this.selfWidth / 2;
-        const midHeight = this.selfHeight / 2;
-        this.selfX = (this.selfX + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
-        this.selfY = (this.selfY + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
-        this.render();
-    }
-
-    // jump
-    public jump() {
-        if (!this.verticalTimer) {
-            this.tempStatus = this.status;
-            this.jumpSpeed = this.initJumpSpeed;
-            this.verticalTimer = setInterval(() => this.move("up"), 17);
-        }
     }
 }
