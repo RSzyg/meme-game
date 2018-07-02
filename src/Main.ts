@@ -77,7 +77,7 @@ export default class Main {
         this.clearRoles();
         if (this.keydown[37]) {
             this.roles["0"].status = "left";
-            this.roles["0"].move(0);
+            this.move("0", 0);
         }
         if (this.keydown[38]) {
             if (!this.roles["0"].verticalTimer) {
@@ -86,17 +86,73 @@ export default class Main {
             }
         }
         if (this.roles["0"].verticalTimer) {
-            this.roles["0"].move(1);
+            this.move("0", 1);
             this.roles["0"].jumpSpeed--;
         }
         if (this.keydown[39]) {
             this.roles["0"].status = "right";
-            this.roles["0"].move(2);
+            this.move("0", 2);
         }
         if (this.keydown[40]) {
             console.log("down");
         }
         this.roles["0"].render();
         requestAnimationFrame(() => this.update());
+    }
+
+    // move
+    private move(id: string, k: number) {
+        this.roles[id].y += Storage.dy[k] * this.roles[id].jumpSpeed;
+        this.roles[id].x += Storage.dx[k] * this.roles[id].moveSpeed;
+        const midWidth = this.roles[id].width / 2;
+        const midHeight = this.roles[id].height / 2;
+        this.roles[id].x = (this.roles[id].x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
+        this.roles[id].y = (this.roles[id].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
+        let isHit = true;
+        while (isHit) {
+            isHit = this.hitController(id, k);
+        }
+    }
+
+    // handle while hit
+    private hitController(id: string, k: number): boolean {
+        if (Math.abs(Storage.dx[k])) {
+            const nleft = (this.roles[id].x - 1 + Storage.sceneWidth) % Storage.sceneWidth;
+            const nright = (this.roles[id].x + this.roles[id].width + Storage.sceneWidth) % Storage.sceneWidth;
+            for (let r = this.roles[id].y; r < this.roles[id].y + this.roles[id].height; r++) {
+                const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+                if (Storage.dx[k] > 0) {
+                    if (Storage.fullyMap[nr][nright]) {
+                        this.roles[id].x--;
+                        return true;
+                    }
+                } else {
+                    if (Storage.fullyMap[nr][nleft]) {
+                        this.roles[id].x++;
+                        return true;
+                    }
+                }
+            }
+        }
+        if (Math.abs(Storage.dy[k])) {
+            const nhead = (this.roles[id].y - 1 + Storage.sceneHeight) % Storage.sceneHeight;
+            const nfoot = (this.roles[id].y + this.roles[id].height + Storage.sceneHeight) % Storage.sceneHeight;
+            for (let c = this.roles[id].x; c < this.roles[id].x + this.roles[id].width; c++) {
+                const nc = (c + Storage.sceneWidth) % Storage.sceneWidth;
+                if (this.roles[id].jumpSpeed < 0) {
+                    if (Storage.fullyMap[nfoot][nc]) {
+                        this.roles[id].y--;
+                        this.roles[id].verticalTimer = false;
+                        return true;
+                    }
+                } else {
+                    if (Storage.fullyMap[nhead][nc]) {
+                        this.roles[id].y++;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
