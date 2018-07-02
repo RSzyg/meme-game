@@ -2,10 +2,8 @@ export default class Storage {
     public static sceneHeight: number = 600;
     public static sceneWidth: number = 800;
     public static images: { [key: string]: HTMLImageElement } = {};
-    public static mapCanvas: HTMLCanvasElement;
-    public static mapCtx: CanvasRenderingContext2D;
-    public static roleCanvas: HTMLCanvasElement;
-    public static roleCtx: CanvasRenderingContext2D;
+    public static canvas: HTMLCanvasElement;
+    public static ctx: CanvasRenderingContext2D;
     public static healthBarColor: string[] = ["#C62828", "#EF6C00", "#43A047", "#43A047"];
     // direction move(left, up, right, down)
     public static dx: number[] = [-1, 0, 1, 0];

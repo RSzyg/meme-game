@@ -10,23 +10,15 @@ export default class Main {
     }
 
     public createScene() {
-        // create map canvas
-        Storage.mapCanvas = document.createElement("canvas");
-        Storage.mapCanvas.style.zIndex = "99";
-        Storage.mapCanvas.style.position = "absolute";
-        Storage.mapCanvas.height = Storage.sceneHeight;
-        Storage.mapCanvas.width = Storage.sceneWidth;
-        document.getElementById("display").appendChild(Storage.mapCanvas);
-        Storage.mapCtx = Storage.mapCanvas.getContext("2d");
+        // create canvas
+        Storage.canvas = document.createElement("canvas");
+        Storage.canvas.style.zIndex = "30";
+        Storage.canvas.style.position = "absolute";
+        Storage.canvas.height = Storage.sceneHeight;
+        Storage.canvas.width = Storage.sceneWidth;
+        document.getElementById("display").appendChild(Storage.canvas);
+        Storage.ctx = Storage.canvas.getContext("2d");
         this.renderMap();
-        // create roles canvas
-        Storage.roleCanvas = document.createElement("canvas");
-        Storage.roleCanvas.style.zIndex = "10";
-        Storage.roleCanvas.style.position = "absolute";
-        Storage.roleCanvas.height = Storage.sceneHeight;
-        Storage.roleCanvas.width = Storage.sceneWidth;
-        document.getElementById("display").appendChild(Storage.roleCanvas);
-        Storage.roleCtx = Storage.roleCanvas.getContext("2d");
         this.createRole("0");
 
         document.addEventListener("keydown", (e) => this.keyboardController(e));
@@ -37,9 +29,9 @@ export default class Main {
         for (let r = 0; r < Storage.simplifiedMap.length; r++) {
             for (let c = 0; c < Storage.simplifiedMap[r].length; c++) {
                 if (Storage.simplifiedMap[r][c] === 1) {
-                    Storage.mapCtx.fillStyle = "#ffffff";
-                    Storage.mapCtx.fillRect(c * 40, r * 40, 40, 40);
-                    Storage.mapCtx.strokeRect(c * 40, r * 40, 40, 40);
+                    Storage.ctx.fillStyle = "#ffffff";
+                    Storage.ctx.fillRect(c * 40, r * 40, 40, 40);
+                    Storage.ctx.strokeRect(c * 40, r * 40, 40, 40);
                 }
             }
         }
@@ -68,13 +60,13 @@ export default class Main {
         }
     }
 
-    private clearRoles() {
-        Storage.roleCtx.fillStyle = "#C0C0C0";
-        Storage.roleCtx.fillRect(0, 0, Storage.sceneWidth, Storage.sceneHeight);
+    private clearScene() {
+        Storage.ctx.fillStyle = "#C0C0C0";
+        Storage.ctx.fillRect(0, 0, Storage.sceneWidth, Storage.sceneHeight);
     }
 
     private update() {
-        this.clearRoles();
+        this.clearScene();
         if (this.keydown[38]) {
             if (!this.roles["0"].verticalTimer) {
                 this.roles["0"].jumpSpeed = this.roles["0"].initJumpSpeed;
@@ -99,6 +91,7 @@ export default class Main {
         if (this.keydown[40]) {
             console.log("down");
         }
+        this.renderMap();
         this.roles["0"].render();
         requestAnimationFrame(() => this.update());
     }
