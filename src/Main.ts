@@ -92,6 +92,9 @@ export default class Main {
         if (this.roles["0"].verticalTimer) {
             this.move("0", 1);
             this.roles["0"].jumpSpeed--;
+        } else {
+            this.roles["0"].jumpSpeed = -1;
+            this.roles["0"].verticalTimer = true;
         }
         if (this.keydown[40]) {
             console.log("down");
@@ -112,7 +115,6 @@ export default class Main {
         while (isHit) {
             isHit = this.hitJudge(id, k);
         }
-        this.fallJudge(id, k);
     }
 
     // handle while hit
@@ -155,15 +157,5 @@ export default class Main {
             }
         }
         return false;
-    }
-
-    // judge the role if fall
-    private fallJudge(id: string, k: number) {
-        if (Math.abs(Storage.dx[k])) {
-            if (!this.roles[id].verticalTimer) {
-                this.roles[id].jumpSpeed = -1;
-                this.roles[id].verticalTimer = true;
-            }
-        }
     }
 }
