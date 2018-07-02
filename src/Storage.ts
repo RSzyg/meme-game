@@ -6,6 +6,7 @@ export default class Storage {
     public static mapCtx: CanvasRenderingContext2D;
     public static roleCanvas: HTMLCanvasElement;
     public static roleCtx: CanvasRenderingContext2D;
+    public static healthBarColor: string[] = ["#C62828", "#EF6C00", "#43A047", "#43A047"];
     // direction move(left, up, right, down)
     public static dx: number[] = [-1, 0, 1, 0];
     public static dy: number[] = [0, -1, 0, 1];
