@@ -75,23 +75,23 @@ export default class Main {
 
     private update() {
         this.clearRoles();
-        if (this.keydown[37]) {
-            this.roles["0"].status = "left";
-            this.move("0", 0);
-        }
         if (this.keydown[38]) {
             if (!this.roles["0"].verticalTimer) {
                 this.roles["0"].jumpSpeed = this.roles["0"].initJumpSpeed;
                 this.roles["0"].verticalTimer = true;
             }
         }
-        if (this.roles["0"].verticalTimer) {
-            this.move("0", 1);
-            this.roles["0"].jumpSpeed--;
+        if (this.keydown[37]) {
+            this.roles["0"].status = "left";
+            this.move("0", 0);
         }
         if (this.keydown[39]) {
             this.roles["0"].status = "right";
             this.move("0", 2);
+        }
+        if (this.roles["0"].verticalTimer) {
+            this.move("0", 1);
+            this.roles["0"].jumpSpeed--;
         }
         if (this.keydown[40]) {
             console.log("down");
@@ -110,12 +110,13 @@ export default class Main {
         this.roles[id].y = (this.roles[id].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
         let isHit = true;
         while (isHit) {
-            isHit = this.hitController(id, k);
+            isHit = this.hitJudge(id, k);
         }
+        this.fallJudge(id, k);
     }
 
     // handle while hit
-    private hitController(id: string, k: number): boolean {
+    private hitJudge(id: string, k: number): boolean {
         if (Math.abs(Storage.dx[k])) {
             const nleft = (this.roles[id].x - 1 + Storage.sceneWidth) % Storage.sceneWidth;
             const nright = (this.roles[id].x + this.roles[id].width + Storage.sceneWidth) % Storage.sceneWidth;
@@ -154,5 +155,15 @@ export default class Main {
             }
         }
         return false;
+    }
+
+    // judge the role if fall
+    private fallJudge(id: string, k: number) {
+        if (Math.abs(Storage.dx[k])) {
+            if (!this.roles[id].verticalTimer) {
+                this.roles[id].jumpSpeed = -1;
+                this.roles[id].verticalTimer = true;
+            }
+        }
     }
 }
