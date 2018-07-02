@@ -39,6 +39,7 @@ export default class Main {
                 if (Storage.simplifiedMap[r][c] === 1) {
                     Storage.mapCtx.fillStyle = "#ffffff";
                     Storage.mapCtx.fillRect(c * 40, r * 40, 40, 40);
+                    Storage.mapCtx.strokeRect(c * 40, r * 40, 40, 40);
                 }
             }
         }
@@ -85,8 +86,8 @@ export default class Main {
             }
         }
         if (this.roles["0"].verticalTimer) {
-            this.roles["0"].jumpSpeed--;
             this.roles["0"].move(1);
+            this.roles["0"].jumpSpeed--;
         }
         if (this.keydown[39]) {
             this.roles["0"].status = "right";
