@@ -1,6 +1,8 @@
 import Storage from "./Storage";
 
 export default class Role {
+    private static healthBarHeight: number = 8;
+    private static healthBarWidth: number = 80;
     // keyboardRecorder
     public keyboardRecorder: {[key: string]: number};
     // timer
@@ -77,12 +79,27 @@ export default class Role {
 
     // rendering
     public render() {
+        const color: string[] = ["#C62828", "#EF6C00", "#43A047", "#43A047"];
+        const index: number = Math.floor((this.healthPoint + 0.2 * this.maxHealthPoint) / (0.4 * this.maxHealthPoint));
+        Storage.roleCtx.strokeRect(
+            this.x - (Role.healthBarWidth - this.width) / 2,
+            this.y - 12,
+            Role.healthBarWidth,
+            Role.healthBarHeight,
+        );
+        Storage.roleCtx.fillStyle = color[index];
+        Storage.roleCtx.fillRect(
+            this.x - (Role.healthBarWidth - this.width) / 2 + 1,
+            this.y - 11,
+            this.healthPoint / this.maxHealthPoint * Role.healthBarWidth * 0.98,
+            Role.healthBarHeight - 2,
+        );
         Storage.roleCtx.drawImage(
             Storage.images[this.selfStatus],
-            this.selfX,
-            this.selfY,
-            this.selfWidth,
-            this.selfHeight,
+            this.x,
+            this.y,
+            this.width,
+            this.height,
         );
     }
 }
