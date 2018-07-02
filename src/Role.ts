@@ -83,14 +83,14 @@ export default class Role {
         Storage.ctx.strokeStyle = "#000000";
         Storage.ctx.strokeRect(
             this.x - (Role.healthBarWidth - this.width) / 2,
-            this.y - 12,
+            this.y - 16,
             Role.healthBarWidth,
             Role.healthBarHeight,
         );
         Storage.ctx.fillStyle = Storage.healthBarColor[index];
         Storage.ctx.fillRect(
             this.x - (Role.healthBarWidth - this.width) / 2 + 1,
-            this.y - 11,
+            this.y - 15,
             this.healthPoint / this.maxHealthPoint * Role.healthBarWidth * 0.98,
             Role.healthBarHeight - 2,
         );

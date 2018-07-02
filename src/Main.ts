@@ -4,9 +4,11 @@ import Storage from "./Storage";
 export default class Main {
     private roles: {[key: string]: Role};
     private keydown: {[key: number]: boolean};
+    private keycycle: {[key: number]: boolean};
     constructor() {
         this.roles = {};
         this.keydown = {};
+        this.keycycle = {};
     }
 
     public createScene() {
@@ -57,6 +59,7 @@ export default class Main {
             this.keydown[e.keyCode] = true;
         } else if (e.type === "keyup") {
             this.keydown[e.keyCode] = false;
+            this.keycycle[e.keyCode] = true;
         }
     }
 
@@ -90,6 +93,10 @@ export default class Main {
         }
         if (this.keydown[40]) {
             console.log("down");
+        }
+        if (this.keycycle[88]) {
+            this.roles["0"].healthPoint -= this.roles["0"].attackPower;
+            this.keycycle[88] = false;
         }
         this.renderMap();
         this.roles["0"].render();
