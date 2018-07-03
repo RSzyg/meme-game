@@ -12,16 +12,27 @@ export default class Main {
     }
 
     public createScene() {
-        // create canvas
-        Storage.canvas = document.createElement("canvas");
-        Storage.canvas.style.zIndex = "30";
-        Storage.canvas.style.position = "absolute";
-        Storage.canvas.height = Storage.sceneHeight;
-        Storage.canvas.width = Storage.sceneWidth;
-        document.getElementById("display").appendChild(Storage.canvas);
-        Storage.ctx = Storage.canvas.getContext("2d");
+        // create mini-map canvas
+        Storage.miniMapCanvas = document.createElement("canvas");
+        Storage.miniMapCanvas.style.zIndex = "2";
+        Storage.miniMapCanvas.style.position = "absolute";
+        Storage.miniMapCanvas.style.right = "0px";
+        Storage.miniMapCanvas.style.top = "0px";
+        Storage.miniMapCanvas.height = 150;
+        Storage.miniMapCanvas.width = 200;
+        document.getElementById("display").appendChild(Storage.miniMapCanvas);
+        Storage.miniMapctx = Storage.miniMapCanvas.getContext("2d");
+        // create main canvas
+        Storage.mainCanvas = document.createElement("canvas");
+        Storage.mainCanvas.style.zIndex = "1";
+        Storage.mainCanvas.style.position = "absolute";
+        Storage.mainCanvas.height = Storage.sceneHeight;
+        Storage.mainCanvas.width = Storage.sceneWidth;
+        document.getElementById("display").appendChild(Storage.mainCanvas);
+        Storage.mainCtx = Storage.mainCanvas.getContext("2d");
         this.renderMap();
         this.createRole("0");
+        this.renderMiniMap();
 
         document.addEventListener("keydown", (e) => this.keyboardController(e));
         document.addEventListener("keyup", (e) => this.keyboardController(e));
@@ -31,9 +42,23 @@ export default class Main {
         for (let r = 0; r < Storage.simplifiedMap.length; r++) {
             for (let c = 0; c < Storage.simplifiedMap[r].length; c++) {
                 if (Storage.simplifiedMap[r][c] === 1) {
-                    Storage.ctx.fillStyle = "#ffffff";
-                    Storage.ctx.fillRect(c * 40, r * 40, 40, 40);
-                    Storage.ctx.strokeRect(c * 40, r * 40, 40, 40);
+                    Storage.mainCtx.fillStyle = "#ffffff";
+                    Storage.mainCtx.fillRect(c * 40, r * 40, 40, 40);
+                    Storage.mainCtx.strokeRect(c * 40, r * 40, 40, 40);
+                }
+            }
+        }
+    }
+
+    private renderMiniMap() {
+        Storage.miniMapctx.globalAlpha = 0.3;
+        Storage.miniMapctx.fillStyle = "#ffffff";
+        Storage.miniMapctx.fillRect(0, 0, 200, 150);
+        for (let r = 0; r < Storage.simplifiedMap.length; r++) {
+            for (let c = 0; c < Storage.simplifiedMap[r].length; c++) {
+                if (Storage.simplifiedMap[r][c] === 1) {
+                    Storage.miniMapctx.fillStyle = "#000000";
+                    Storage.miniMapctx.fillRect(c * 10, r * 10, 10, 10);
                 }
             }
         }
@@ -64,8 +89,7 @@ export default class Main {
     }
 
     private clearScene() {
-        Storage.ctx.fillStyle = "#C0C0C0";
-        Storage.ctx.fillRect(0, 0, Storage.sceneWidth, Storage.sceneHeight);
+        Storage.mainCanvas.height = Storage.mainCanvas.height;
     }
 
     private update() {

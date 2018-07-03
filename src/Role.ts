@@ -80,21 +80,21 @@ export default class Role {
     // rendering
     public render() {
         const index: number = Math.floor((this.healthPoint + 0.2 * this.maxHealthPoint) / (0.4 * this.maxHealthPoint));
-        Storage.ctx.strokeStyle = "#000000";
-        Storage.ctx.strokeRect(
+        Storage.mainCtx.strokeStyle = "#000000";
+        Storage.mainCtx.strokeRect(
             this.x - (Role.healthBarWidth - this.width) / 2,
             this.y - 16,
             Role.healthBarWidth,
             Role.healthBarHeight,
         );
-        Storage.ctx.fillStyle = Storage.healthBarColor[index];
-        Storage.ctx.fillRect(
+        Storage.mainCtx.fillStyle = Storage.healthBarColor[index];
+        Storage.mainCtx.fillRect(
             this.x - (Role.healthBarWidth - this.width) / 2 + 1,
             this.y - 15,
             this.healthPoint / this.maxHealthPoint * Role.healthBarWidth * 0.98,
             Role.healthBarHeight - 2,
         );
-        Storage.ctx.drawImage(
+        Storage.mainCtx.drawImage(
             Storage.images[this.selfStatus],
             this.x,
             this.y,
