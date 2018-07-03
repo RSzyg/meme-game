@@ -187,6 +187,7 @@ export default class Main {
                 } else {
                     if (Storage.fullyMap[nhead][nc]) {
                         this.roles[id].y++;
+                        this.roles[id].jumpSpeed = 1;
                         return true;
                     }
                 }
