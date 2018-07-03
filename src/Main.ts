@@ -196,14 +196,14 @@ export default class Main {
         const midHeight = this.roles[id].height / 2;
         this.roles[id].x = (this.roles[id].x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
         this.roles[id].y = (this.roles[id].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
-        let isHit = true;
-        while (isHit) {
-            isHit = this.hitJudge(id, k);
+        let isCollide = true;
+        while (isCollide) {
+            isCollide = this.collisionJudge(id, k);
         }
     }
 
     // handle while hit
-    private hitJudge(id: string, k: number): boolean {
+    private collisionJudge(id: string, k: number): boolean {
         if (Math.abs(Storage.dx[k])) {
             const nleft = (this.roles[id].x - 1 + Storage.sceneWidth) % Storage.sceneWidth;
             const nright = (this.roles[id].x + this.roles[id].width + Storage.sceneWidth) % Storage.sceneWidth;
