@@ -12,6 +12,16 @@ export default class Main {
     }
 
     public createScene() {
+        // create mini-role canvas
+        Storage.miniRoleCanvas = document.createElement("canvas");
+        Storage.miniRoleCanvas.style.zIndex = "3";
+        Storage.miniRoleCanvas.style.position = "absolute";
+        Storage.miniRoleCanvas.style.right = "0px";
+        Storage.miniRoleCanvas.style.top = "0px";
+        Storage.miniRoleCanvas.height = 150;
+        Storage.miniRoleCanvas.width = 200;
+        document.getElementById("display").appendChild(Storage.miniRoleCanvas);
+        Storage.miniRoleCtx = Storage.miniRoleCanvas.getContext("2d");
         // create mini-map canvas
         Storage.miniMapCanvas = document.createElement("canvas");
         Storage.miniMapCanvas.style.zIndex = "2";
@@ -21,7 +31,7 @@ export default class Main {
         Storage.miniMapCanvas.height = 150;
         Storage.miniMapCanvas.width = 200;
         document.getElementById("display").appendChild(Storage.miniMapCanvas);
-        Storage.miniMapctx = Storage.miniMapCanvas.getContext("2d");
+        Storage.miniMapCtx = Storage.miniMapCanvas.getContext("2d");
         // create main canvas
         Storage.mainCanvas = document.createElement("canvas");
         Storage.mainCanvas.style.zIndex = "1";
@@ -51,14 +61,14 @@ export default class Main {
     }
 
     private renderMiniMap() {
-        Storage.miniMapctx.globalAlpha = 0.3;
-        Storage.miniMapctx.fillStyle = "#ffffff";
-        Storage.miniMapctx.fillRect(0, 0, 200, 150);
+        Storage.miniMapCtx.globalAlpha = 0.3;
+        Storage.miniMapCtx.fillStyle = "#ffffff";
+        Storage.miniMapCtx.fillRect(0, 0, 200, 150);
         for (let r = 0; r < Storage.simplifiedMap.length; r++) {
             for (let c = 0; c < Storage.simplifiedMap[r].length; c++) {
                 if (Storage.simplifiedMap[r][c] === 1) {
-                    Storage.miniMapctx.fillStyle = "#000000";
-                    Storage.miniMapctx.fillRect(c * 10, r * 10, 10, 10);
+                    Storage.miniMapCtx.fillStyle = "#000000";
+                    Storage.miniMapCtx.fillRect(c * 10, r * 10, 10, 10);
                 }
             }
         }
@@ -90,6 +100,8 @@ export default class Main {
 
     private clearScene() {
         Storage.mainCanvas.height = Storage.mainCanvas.height;
+        Storage.miniRoleCanvas.height = Storage.miniRoleCanvas.height;
+        Storage.miniRoleCtx.globalAlpha = 0.4;
     }
 
     private update() {

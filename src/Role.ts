@@ -101,5 +101,18 @@ export default class Role {
             this.width,
             this.height,
         );
+        this.renderMiniRole();
+    }
+
+    private renderMiniRole() {
+        Storage.miniRoleCtx.arc(
+            (this.x + this.width / 2) / Storage.sceneWidth * 200,
+            (this.y + this.height / 2) / Storage.sceneHeight * 150,
+            (this.width / 2) / Storage.sceneWidth * 200,
+            0,
+            2 * Math.PI,
+        );
+        Storage.miniRoleCtx.fillStyle = "green";
+        Storage.miniRoleCtx.fill();
     }
 }
