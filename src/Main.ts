@@ -12,16 +12,26 @@ export default class Main {
     }
 
     public createScene() {
-        // create mini-role canvas
-        Storage.miniRoleCanvas = document.createElement("canvas");
-        Storage.miniRoleCanvas.style.zIndex = "3";
-        Storage.miniRoleCanvas.style.position = "absolute";
-        Storage.miniRoleCanvas.style.right = "0px";
-        Storage.miniRoleCanvas.style.top = "0px";
-        Storage.miniRoleCanvas.height = 150;
-        Storage.miniRoleCanvas.width = 200;
-        document.getElementById("display").appendChild(Storage.miniRoleCanvas);
-        Storage.miniRoleCtx = Storage.miniRoleCanvas.getContext("2d");
+        // create mini-self-role canvas
+        Storage.miniSelfRoleCanvas = document.createElement("canvas");
+        Storage.miniSelfRoleCanvas.style.zIndex = "3";
+        Storage.miniSelfRoleCanvas.style.position = "absolute";
+        Storage.miniSelfRoleCanvas.style.right = "0px";
+        Storage.miniSelfRoleCanvas.style.top = "0px";
+        Storage.miniSelfRoleCanvas.height = 150;
+        Storage.miniSelfRoleCanvas.width = 200;
+        document.getElementById("display").appendChild(Storage.miniSelfRoleCanvas);
+        Storage.miniSelfRoleCtx = Storage.miniSelfRoleCanvas.getContext("2d");
+        // create mini-other-role canvas
+        Storage.miniOtherRoleCanvas = document.createElement("canvas");
+        Storage.miniOtherRoleCanvas.style.zIndex = "3";
+        Storage.miniOtherRoleCanvas.style.position = "absolute";
+        Storage.miniOtherRoleCanvas.style.right = "0px";
+        Storage.miniOtherRoleCanvas.style.top = "0px";
+        Storage.miniOtherRoleCanvas.height = 150;
+        Storage.miniOtherRoleCanvas.width = 200;
+        document.getElementById("display").appendChild(Storage.miniOtherRoleCanvas);
+        Storage.miniOtherRoleCtx = Storage.miniOtherRoleCanvas.getContext("2d");
         // create mini-map canvas
         Storage.miniMapCanvas = document.createElement("canvas");
         Storage.miniMapCanvas.style.zIndex = "2";
@@ -42,7 +52,9 @@ export default class Main {
         Storage.mainCtx = Storage.mainCanvas.getContext("2d");
         this.renderMap();
         this.createRole("0");
+        this.createRole("1");
         this.renderMiniMap();
+        this.update();
 
         document.addEventListener("keydown", (e) => this.keyboardController(e));
         document.addEventListener("keyup", (e) => this.keyboardController(e));
@@ -61,7 +73,7 @@ export default class Main {
     }
 
     private renderMiniMap() {
-        Storage.miniMapCtx.globalAlpha = 0.3;
+        Storage.miniMapCtx.globalAlpha = 0.4;
         Storage.miniMapCtx.fillStyle = "#ffffff";
         Storage.miniMapCtx.fillRect(0, 0, 200, 150);
         for (let r = 0; r < Storage.simplifiedMap.length; r++) {
@@ -76,9 +88,10 @@ export default class Main {
 
     private createRole(id: string) {
         const data = {
+            roleId: id,
             width: 54,
             height: 54,
-            x: 0,
+            x: +id * 100,
             y: Storage.sceneHeight - 54,
             maxHealthPoint: 100,
             attackPower: 3,
@@ -86,7 +99,6 @@ export default class Main {
             jumpSpeed: 19,
         };
         this.roles[id] = new Role(data);
-        this.update();
     }
 
     private keyboardController(e: KeyboardEvent) {
@@ -100,12 +112,26 @@ export default class Main {
 
     private clearScene() {
         Storage.mainCanvas.height = Storage.mainCanvas.height;
-        Storage.miniRoleCanvas.height = Storage.miniRoleCanvas.height;
-        Storage.miniRoleCtx.globalAlpha = 0.4;
+        Storage.miniSelfRoleCanvas.height = Storage.miniSelfRoleCanvas.height;
+        Storage.miniSelfRoleCtx.globalAlpha = 0.5;
+        Storage.miniOtherRoleCanvas.height = Storage.miniOtherRoleCanvas.height;
+        Storage.miniOtherRoleCtx.globalAlpha = 0.5;
     }
 
+    /**
+     * 37 ←
+     * 38 ↑
+     * 39 →
+     * 40 ↓
+     * 65 A
+     * 87 W
+     * 68 D
+     * 83 S
+     * 88 X
+     */
     private update() {
         this.clearScene();
+        // player1
         if (this.keydown[38]) {
             if (!this.roles["0"].verticalTimer) {
                 this.roles["0"].jumpSpeed = this.roles["0"].initJumpSpeed;
@@ -127,15 +153,38 @@ export default class Main {
             this.roles["0"].jumpSpeed = -1;
             this.roles["0"].verticalTimer = true;
         }
-        if (this.keydown[40]) {
-            console.log("down");
-        }
         if (this.keycycle[88]) {
             this.roles["0"].healthPoint -= this.roles["0"].attackPower;
             this.keycycle[88] = false;
         }
+        // player2
+        if (this.keydown[87]) {
+            if (!this.roles["1"].verticalTimer) {
+                this.roles["1"].jumpSpeed = this.roles["1"].initJumpSpeed;
+                this.roles["1"].verticalTimer = true;
+            }
+        }
+        if (this.keydown[65]) {
+            this.roles["1"].status = "left";
+            this.move("1", 0);
+        }
+        if (this.keydown[68]) {
+            this.roles["1"].status = "right";
+            this.move("1", 2);
+        }
+        if (this.roles["1"].verticalTimer) {
+            this.move("1", 1);
+            this.roles["1"].jumpSpeed--;
+        } else {
+            this.roles["1"].jumpSpeed = -1;
+            this.roles["1"].verticalTimer = true;
+        }
         this.renderMap();
-        this.roles["0"].render();
+        for (const key in this.roles) {
+            if (this.roles[key]) {
+                this.roles[key].render();
+            }
+        }
         requestAnimationFrame(() => this.update());
     }
 

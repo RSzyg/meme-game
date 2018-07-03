@@ -17,12 +17,14 @@ export default class Role {
     private selfStatus: string; // left, right, up, down and blabla(default left)
     private tempStatus: string;
     // element properties
+    private roleId: string;
     private selfHeight: number;
     private selfWidth: number;
     private selfX: number;
     private selfY: number;
 
-    constructor(data: { [key: string]: number }) {
+    constructor(data: { [key: string]: any }) {
+        this.roleId = data.roleId;
         // keyboardRecorder
         this.keyboardRecorder = {};
         // timer
@@ -113,14 +115,23 @@ export default class Role {
     }
 
     private renderMiniRole() {
-        Storage.miniRoleCtx.arc(
+        let ctx: CanvasRenderingContext2D;
+        let color: string;
+        if (this.roleId === "0") {
+            ctx = Storage.miniSelfRoleCtx;
+            color = "green";
+        } else {
+            ctx = Storage.miniOtherRoleCtx;
+            color = "red";
+        }
+        ctx.arc(
             (this.x + this.width / 2) / Storage.sceneWidth * 200,
             (this.y + this.height / 2) / Storage.sceneHeight * 150,
             (this.width / 2) / Storage.sceneWidth * 200,
             0,
             2 * Math.PI,
         );
-        Storage.miniRoleCtx.fillStyle = "green";
-        Storage.miniRoleCtx.fill();
+        ctx.fillStyle = color;
+        ctx.fill();
     }
 }

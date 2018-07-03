@@ -4,8 +4,10 @@ export default class Storage {
     public static images: { [key: string]: HTMLImageElement } = {};
     public static miniMapCanvas: HTMLCanvasElement;
     public static miniMapCtx: CanvasRenderingContext2D;
-    public static miniRoleCanvas: HTMLCanvasElement;
-    public static miniRoleCtx: CanvasRenderingContext2D;
+    public static miniSelfRoleCanvas: HTMLCanvasElement;
+    public static miniSelfRoleCtx: CanvasRenderingContext2D;
+    public static miniOtherRoleCanvas: HTMLCanvasElement;
+    public static miniOtherRoleCtx: CanvasRenderingContext2D;
     public static mainCanvas: HTMLCanvasElement;
     public static mainCtx: CanvasRenderingContext2D;
     public static healthBarColor: string[] = ["#C62828", "#EF6C00", "#43A047", "#43A047"];
