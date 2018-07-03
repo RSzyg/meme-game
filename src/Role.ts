@@ -79,6 +79,22 @@ export default class Role {
 
     // rendering
     public render() {
+        this.renderRole();
+        this.renderHealthBar();
+        this.renderMiniRole();
+    }
+
+    private renderRole() {
+        Storage.mainCtx.drawImage(
+            Storage.images[this.selfStatus],
+            this.x,
+            this.y,
+            this.width,
+            this.height,
+        );
+    }
+
+    private renderHealthBar() {
         const index: number = Math.floor((this.healthPoint + 0.2 * this.maxHealthPoint) / (0.4 * this.maxHealthPoint));
         Storage.mainCtx.strokeStyle = "#000000";
         Storage.mainCtx.strokeRect(
@@ -94,14 +110,6 @@ export default class Role {
             this.healthPoint / this.maxHealthPoint * Role.healthBarWidth * 0.98,
             Role.healthBarHeight - 2,
         );
-        Storage.mainCtx.drawImage(
-            Storage.images[this.selfStatus],
-            this.x,
-            this.y,
-            this.width,
-            this.height,
-        );
-        this.renderMiniRole();
     }
 
     private renderMiniRole() {
