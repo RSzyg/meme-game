@@ -160,15 +160,15 @@ export default class Role {
 
     private renderHealthBar() {
         const index: number = Math.floor((this.healthPoint + 0.2 * this.maxHealthPoint) / (0.4 * this.maxHealthPoint));
-        Storage.mainCtx.strokeStyle = "#000000";
-        Storage.mainCtx.strokeRect(
+        Storage.barCtx.strokeStyle = "#000000";
+        Storage.barCtx.strokeRect(
             this.x - (Role.healthBarWidth - this.width) / 2,
             this.y - 16,
             Role.healthBarWidth,
             Role.healthBarHeight,
         );
-        Storage.mainCtx.fillStyle = Storage.healthBarColor[index];
-        Storage.mainCtx.fillRect(
+        Storage.barCtx.fillStyle = Storage.healthBarColor[index];
+        Storage.barCtx.fillRect(
             this.x - (Role.healthBarWidth - this.width) / 2 + 1,
             this.y - 15,
             this.healthPoint / this.maxHealthPoint * Role.healthBarWidth * 0.98,

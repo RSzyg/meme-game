@@ -14,7 +14,7 @@ export default class Main {
     public createScene() {
         // create mini-self-role canvas
         Storage.miniSelfRoleCanvas = document.createElement("canvas");
-        Storage.miniSelfRoleCanvas.style.zIndex = "3";
+        Storage.miniSelfRoleCanvas.style.zIndex = "4";
         Storage.miniSelfRoleCanvas.style.position = "absolute";
         Storage.miniSelfRoleCanvas.style.right = "0px";
         Storage.miniSelfRoleCanvas.style.top = "0px";
@@ -24,7 +24,7 @@ export default class Main {
         Storage.miniSelfRoleCtx = Storage.miniSelfRoleCanvas.getContext("2d");
         // create mini-other-role canvas
         Storage.miniOtherRoleCanvas = document.createElement("canvas");
-        Storage.miniOtherRoleCanvas.style.zIndex = "3";
+        Storage.miniOtherRoleCanvas.style.zIndex = "4";
         Storage.miniOtherRoleCanvas.style.position = "absolute";
         Storage.miniOtherRoleCanvas.style.right = "0px";
         Storage.miniOtherRoleCanvas.style.top = "0px";
@@ -34,7 +34,7 @@ export default class Main {
         Storage.miniOtherRoleCtx = Storage.miniOtherRoleCanvas.getContext("2d");
         // create mini-map canvas
         Storage.miniMapCanvas = document.createElement("canvas");
-        Storage.miniMapCanvas.style.zIndex = "2";
+        Storage.miniMapCanvas.style.zIndex = "3";
         Storage.miniMapCanvas.style.position = "absolute";
         Storage.miniMapCanvas.style.right = "0px";
         Storage.miniMapCanvas.style.top = "0px";
@@ -42,6 +42,14 @@ export default class Main {
         Storage.miniMapCanvas.width = 200;
         document.getElementById("display").appendChild(Storage.miniMapCanvas);
         Storage.miniMapCtx = Storage.miniMapCanvas.getContext("2d");
+        // create bar canvas
+        Storage.barCanvas = document.createElement("canvas");
+        Storage.barCanvas.style.zIndex = "2";
+        Storage.barCanvas.style.position = "absolute";
+        Storage.barCanvas.height = Storage.sceneHeight;
+        Storage.barCanvas.width = Storage.sceneWidth;
+        document.getElementById("display").appendChild(Storage.barCanvas);
+        Storage.barCtx = Storage.barCanvas.getContext("2d");
         // create main canvas
         Storage.mainCanvas = document.createElement("canvas");
         Storage.mainCanvas.style.zIndex = "1";
@@ -112,6 +120,7 @@ export default class Main {
 
     private clearScene() {
         Storage.mainCanvas.height = Storage.mainCanvas.height;
+        Storage.barCanvas.height = Storage.barCanvas.height;
         Storage.miniSelfRoleCanvas.height = Storage.miniSelfRoleCanvas.height;
         Storage.miniSelfRoleCtx.globalAlpha = 0.5;
         Storage.miniOtherRoleCanvas.height = Storage.miniOtherRoleCanvas.height;
