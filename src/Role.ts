@@ -86,6 +86,68 @@ export default class Role {
         this.renderMiniRole();
     }
 
+    // remove
+    public removeFlag(x: number, y: number, k: number) {
+        for (let r = this.y; r < this.y + this.height; r++) {
+            const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+            for (let c = this.x; c < this.x + this.width; c++) {
+                const nc = (c + Storage.sceneWidth) % Storage.sceneWidth;
+                if (Storage.fullyMap[nr][nc] === 0) {
+                    Storage.fullyMap[nr][nc] = +this.roleId;
+                }
+            }
+        }
+        if (Math.abs(Storage.dx[k])) {
+            if (Storage.dx[k] > 0) {
+                for (let r = this.y; r < this.y + this.height; r++) {
+                    const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+                    const nx = (x > this.x) ? (this.x + Storage.sceneWidth) : this.x;
+                    for (let c = x; c < nx; c++) {
+                        const nc = (c + Storage.sceneWidth) % Storage.sceneWidth;
+                        if (Storage.fullyMap[nr][nc] === +this.roleId) {
+                            Storage.fullyMap[nr][nc] = 0;
+                        }
+                    }
+                }
+            } else {
+                for (let r = this.y; r < this.y + this.height; r++) {
+                    const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+                    const nx = (x < this.x) ? (x + Storage.sceneWidth) : x;
+                    for (let c = this.x + this.width; c < nx + this.width; c++) {
+                        const nc = (c + Storage.sceneWidth) % Storage.sceneWidth;
+                        if (Storage.fullyMap[nr][nc] === +this.roleId) {
+                            Storage.fullyMap[nr][nc] = 0;
+                        }
+                    }
+                }
+            }
+        } else if (Math.abs(Storage.dy[k])) {
+            if (Storage.dy[k] > 0) {
+                const ny = (y > this.y) ? (this.y + Storage.sceneHeight) : this.y;
+                for (let r = y; r < ny; r++) {
+                    const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+                    for (let c = this.x; c < this.x + this.width; c++) {
+                        const nc = (c + Storage.sceneWidth) % Storage.sceneWidth;
+                        if (Storage.fullyMap[nr][nc] === +this.roleId) {
+                            Storage.fullyMap[nr][nc] = 0;
+                        }
+                    }
+                }
+            } else {
+                const ny = (y < this.y) ? (y + Storage.sceneHeight) : y;
+                for (let r = this.y + this.height; r < ny + this.height; r++) {
+                    const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+                    for (let c = this.x; c < this.x + this.width; c++) {
+                        const nc = (c + Storage.sceneWidth) % Storage.sceneWidth;
+                        if (Storage.fullyMap[nr][nc] === +this.roleId) {
+                            Storage.fullyMap[nr][nc] = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private renderRole() {
         Storage.mainCtx.drawImage(
             Storage.images[this.selfStatus],
@@ -117,7 +179,7 @@ export default class Role {
     private renderMiniRole() {
         let ctx: CanvasRenderingContext2D;
         let color: string;
-        if (this.roleId === "0") {
+        if (this.roleId === "2") {
             ctx = Storage.miniSelfRoleCtx;
             color = "green";
         } else {

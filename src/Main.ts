@@ -51,8 +51,8 @@ export default class Main {
         document.getElementById("display").appendChild(Storage.mainCanvas);
         Storage.mainCtx = Storage.mainCanvas.getContext("2d");
         this.renderMap();
-        this.createRole("0");
-        this.createRole("1");
+        this.createRole("2");
+        this.createRole("3");
         this.renderMiniMap();
         this.update();
 
@@ -91,7 +91,7 @@ export default class Main {
             roleId: id,
             width: 54,
             height: 54,
-            x: +id * 100,
+            x: (+id - 2) * 100,
             y: Storage.sceneHeight - 54,
             maxHealthPoint: 100,
             attackPower: 3,
@@ -133,51 +133,63 @@ export default class Main {
         this.clearScene();
         // player1
         if (this.keydown[38]) {
-            if (!this.roles["0"].verticalTimer) {
-                this.roles["0"].jumpSpeed = this.roles["0"].initJumpSpeed;
-                this.roles["0"].verticalTimer = true;
+            if (!this.roles["2"].verticalTimer) {
+                this.roles["2"].jumpSpeed = this.roles["2"].initJumpSpeed;
+                this.roles["2"].verticalTimer = true;
             }
         }
         if (this.keydown[37]) {
-            this.roles["0"].status = "left";
-            this.move("0", 0);
+            if (!this.keydown[39]) {
+                this.roles["2"].status = "left";
+                this.move("2", 0);
+            }
         }
         if (this.keydown[39]) {
-            this.roles["0"].status = "right";
-            this.move("0", 2);
+            if (!this.keydown[37]) {
+                this.roles["2"].status = "right";
+                this.move("2", 2);
+            }
         }
-        if (this.roles["0"].verticalTimer) {
-            this.move("0", 1);
-            this.roles["0"].jumpSpeed--;
+        if (this.roles["2"].verticalTimer) {
+            this.move("2", 1);
+            this.roles["2"].jumpSpeed--;
         } else {
-            this.roles["0"].jumpSpeed = -1;
-            this.roles["0"].verticalTimer = true;
+            this.roles["2"].jumpSpeed = -1;
+            this.roles["2"].verticalTimer = true;
         }
         if (this.keycycle[88]) {
-            this.roles["0"].healthPoint -= this.roles["0"].attackPower;
+            this.roles["2"].healthPoint -= this.roles["2"].attackPower;
             this.keycycle[88] = false;
         }
         // player2
         if (this.keydown[87]) {
-            if (!this.roles["1"].verticalTimer) {
-                this.roles["1"].jumpSpeed = this.roles["1"].initJumpSpeed;
-                this.roles["1"].verticalTimer = true;
+            if (!this.roles["3"].verticalTimer) {
+                this.roles["3"].jumpSpeed = this.roles["3"].initJumpSpeed;
+                this.roles["3"].verticalTimer = true;
             }
         }
         if (this.keydown[65]) {
-            this.roles["1"].status = "left";
-            this.move("1", 0);
+            if (!this.keydown[68]) {
+                this.roles["3"].status = "left";
+                this.move("3", 0);
+            }
         }
         if (this.keydown[68]) {
-            this.roles["1"].status = "right";
-            this.move("1", 2);
+            if (!this.keydown[65]) {
+                this.roles["3"].status = "right";
+                this.move("3", 2);
+            }
         }
-        if (this.roles["1"].verticalTimer) {
-            this.move("1", 1);
-            this.roles["1"].jumpSpeed--;
+        if (this.roles["3"].verticalTimer) {
+            if (this.roles["3"].jumpSpeed > 0) {
+                this.move("3", 1);
+            } else {
+                this.move("3", 3);
+            }
+            this.roles["3"].jumpSpeed--;
         } else {
-            this.roles["1"].jumpSpeed = -1;
-            this.roles["1"].verticalTimer = true;
+            this.roles["3"].jumpSpeed = -1;
+            this.roles["3"].verticalTimer = true;
         }
         this.renderMap();
         for (const key in this.roles) {
@@ -190,32 +202,36 @@ export default class Main {
 
     // move
     private move(id: string, k: number) {
-        this.roles[id].y += Storage.dy[k] * this.roles[id].jumpSpeed;
-        this.roles[id].x += Storage.dx[k] * this.roles[id].moveSpeed;
+        const nx = this.roles[id].x;
+        const ny = this.roles[id].y;
+        const nk = (k === 3) ? 1 : k;
+        this.roles[id].y += Storage.dy[nk] * this.roles[id].jumpSpeed;
+        this.roles[id].x += Storage.dx[nk] * this.roles[id].moveSpeed;
         const midWidth = this.roles[id].width / 2;
         const midHeight = this.roles[id].height / 2;
-        this.roles[id].x = (this.roles[id].x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
-        this.roles[id].y = (this.roles[id].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
+        this.roles[id].x = (this.roles[id].x + Storage.sceneWidth) % Storage.sceneWidth;
+        this.roles[id].y = (this.roles[id].y + Storage.sceneHeight) % Storage.sceneHeight;
         let isCollide = true;
         while (isCollide) {
             isCollide = this.collisionJudge(id, k);
         }
+        this.roles[id].removeFlag(nx, ny, k);
     }
 
     // handle while hit
     private collisionJudge(id: string, k: number): boolean {
         if (Math.abs(Storage.dx[k])) {
-            const nleft = (this.roles[id].x - 1 + Storage.sceneWidth) % Storage.sceneWidth;
-            const nright = (this.roles[id].x + this.roles[id].width + Storage.sceneWidth) % Storage.sceneWidth;
+            const nleft = (this.roles[id].x + Storage.sceneWidth) % Storage.sceneWidth;
+            const nright = (this.roles[id].x - 1 + this.roles[id].width + Storage.sceneWidth) % Storage.sceneWidth;
             for (let r = this.roles[id].y; r < this.roles[id].y + this.roles[id].height; r++) {
                 const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.dx[k] > 0) {
-                    if (Storage.fullyMap[nr][nright]) {
+                    if (Storage.fullyMap[nr][nright] && Storage.fullyMap[nr][nright] !== +id) {
                         this.roles[id].x--;
                         return true;
                     }
                 } else {
-                    if (Storage.fullyMap[nr][nleft]) {
+                    if (Storage.fullyMap[nr][nleft] && Storage.fullyMap[nr][nleft] !== +id) {
                         this.roles[id].x++;
                         return true;
                     }
@@ -223,18 +239,18 @@ export default class Main {
             }
         }
         if (Math.abs(Storage.dy[k])) {
-            const nhead = (this.roles[id].y - 1 + Storage.sceneHeight) % Storage.sceneHeight;
-            const nfoot = (this.roles[id].y + this.roles[id].height + Storage.sceneHeight) % Storage.sceneHeight;
+            const nhead = (this.roles[id].y + Storage.sceneHeight) % Storage.sceneHeight;
+            const nfoot = (this.roles[id].y + this.roles[id].height - 1 + Storage.sceneHeight) % Storage.sceneHeight;
             for (let c = this.roles[id].x; c < this.roles[id].x + this.roles[id].width; c++) {
                 const nc = (c + Storage.sceneWidth) % Storage.sceneWidth;
                 if (this.roles[id].jumpSpeed < 0) {
-                    if (Storage.fullyMap[nfoot][nc]) {
+                    if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== +id) {
                         this.roles[id].y--;
                         this.roles[id].verticalTimer = false;
                         return true;
                     }
                 } else {
-                    if (Storage.fullyMap[nhead][nc]) {
+                    if (Storage.fullyMap[nhead][nc] && Storage.fullyMap[nhead][nc] !== +id) {
                         this.roles[id].y++;
                         this.roles[id].jumpSpeed = 1;
                         return true;
