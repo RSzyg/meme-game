@@ -1,6 +1,6 @@
 # meme-game
-A series of games about meme.  
-Also a reconstruction of fighting-meme by using html canvas.  
+A reconstruction of fighting-meme by using html canvas.  
+~~Also a series of games about meme.~~  
 ## key description
 ### player1
 `←` is move left  
