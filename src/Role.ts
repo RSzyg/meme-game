@@ -90,6 +90,14 @@ export default class Role {
         }
     }
 
+    // handle while dead
+    public deadthController() {
+        if (this.healthPoint < 0) {
+            this.healthPoint = 0;
+            this.roleStatus = "dead";
+        }
+    }
+
     // rendering
     public render() {
         this.renderRole();
