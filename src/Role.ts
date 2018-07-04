@@ -15,6 +15,7 @@ export default class Role {
     public moveSpeed: number;
     public initJumpSpeed: number;
     public jumpSpeed: number;
+    public attackId: string[];
     private selfStatus: string; // left, right, up, down and blabla(default left)
     private tempStatus: string;
     // element properties
@@ -43,6 +44,7 @@ export default class Role {
         this.attackRange = data.attackRange;
         this.moveSpeed = data.moveSpeed;
         this.initJumpSpeed = this.jumpSpeed = data.jumpSpeed;
+        this.attackId = [];
     }
 
     // element properties setter & getter

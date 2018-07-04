@@ -168,7 +168,9 @@ export default class Main {
             this.roles["2"].verticalTimer = true;
         }
         if (this.keycycle[88]) {
-            this.attackJudge("2");
+            for (const aid of this.roles["2"].attackId) {
+                this.roles[aid].healthPoint -= this.roles["2"].attackPower;
+            }
             this.keycycle[88] = false;
         }
         // player2
@@ -215,6 +217,7 @@ export default class Main {
 
     private ifInAttackRange(id: string): boolean {
         let judge: boolean = false;
+        this.roles[id].attackId = [];
         if (this.roles[id].status === "left") {
             const nleft = this.roles[id].x - this.roles[id].attackRange;
             const nc = (nleft + Storage.sceneWidth) % Storage.sceneWidth;
@@ -223,6 +226,16 @@ export default class Main {
             for (let r = nhead; r < nfoot; r++) {
                 const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.fullyMap[nr][nc] > 1) {
+                    let ifExist: boolean = false;
+                    for (const aid of this.roles[id].attackId) {
+                        if (+aid === Storage.fullyMap[nr][nc]) {
+                            ifExist = true;
+                            break;
+                        }
+                    }
+                    if (!ifExist) {
+                        this.roles[id].attackId.push(Storage.fullyMap[nr][nc].toString());
+                    }
                     judge = true;
                 }
             }
@@ -234,51 +247,21 @@ export default class Main {
             for (let r = nhead; r < nfoot; r++) {
                 const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.fullyMap[nr][nc] > 1) {
+                    let ifExist: boolean = false;
+                    for (const aid of this.roles[id].attackId) {
+                        if (+aid === Storage.fullyMap[nr][nc]) {
+                            ifExist = true;
+                            break;
+                        }
+                    }
+                    if (!ifExist) {
+                        this.roles[id].attackId.push(Storage.fullyMap[nr][nc].toString());
+                    }
                     judge = true;
                 }
             }
         }
         return judge;
-    }
-
-    // attack judge
-    private attackJudge(id: string) {
-        if (this.roles[id].status === "left") {
-            for (const key in this.roles) {
-                if (key !== id) {
-                    const nc = (
-                        this.roles[key].x +
-                        this.roles[key].width +
-                        Storage.sceneWidth +
-                        this.roles[id].attackRange
-                    ) % Storage.sceneWidth;
-                    for (let r = this.roles[key].y; r < this.roles[key].y + this.roles[key].height; r++) {
-                        const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
-                        if (Storage.fullyMap[nr][nc] === +id) {
-                            this.roles[key].healthPoint -= this.roles[id].attackPower;
-                            return;
-                        }
-                    }
-                }
-            }
-        } else if (this.roles[id].status === "right") {
-            for (const key in this.roles) {
-                if (key !== id) {
-                    const nc = (
-                        this.roles[key].x - 1 +
-                        Storage.sceneWidth -
-                        this.roles[id].attackRange
-                    ) % Storage.sceneWidth;
-                    for (let r = this.roles[key].y; r < this.roles[key].y + this.roles[key].height; r++) {
-                        const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
-                        if (Storage.fullyMap[nr][nc] === +id) {
-                            this.roles[key].healthPoint -= this.roles[id].attackPower;
-                            return;
-                        }
-                    }
-                }
-            }
-        }
     }
 
     // move
