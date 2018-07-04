@@ -6,6 +6,7 @@ export default class Role {
     // keyboardRecorder
     public keyboardRecorder: {[key: string]: number};
     // timer
+    public attackTimer: number;
     public verticalTimer: boolean;
     // basic properties
     public healthPoint: number;
@@ -16,8 +17,9 @@ export default class Role {
     public initJumpSpeed: number;
     public jumpSpeed: number;
     public attackId: string[];
-    private selfStatus: string; // left, right, up, down and blabla(default left)
-    private tempStatus: string;
+    public horizontalStatus: string; // left, right (default right)
+    public verticalStatus: string; // up, down (default undefined)
+    public roleStatus: string; // dead, attack (default undefined)
     // element properties
     private roleId: string;
     private selfHeight: number;
@@ -30,6 +32,7 @@ export default class Role {
         // keyboardRecorder
         this.keyboardRecorder = {};
         // timer
+        this.attackTimer = 0;
         this.verticalTimer = false;
         // element properties
         this.selfHeight = data.height;
@@ -37,8 +40,9 @@ export default class Role {
         this.selfX = data.x;
         this.selfY = data.y;
         // basic properties
-        this.selfStatus = "left";
-        this.tempStatus = "left";
+        this.horizontalStatus = "left";
+        this.verticalStatus = undefined;
+        this.roleStatus = undefined;
         this.healthPoint = this.maxHealthPoint = data.maxHealthPoint;
         this.attackPower = data.attackPower;
         this.attackRange = data.attackRange;
@@ -76,11 +80,14 @@ export default class Role {
         this.selfWidth = width;
     }
 
-    public get status(): string {
-        return this.selfStatus;
-    }
-    public set status(status: string) {
-        this.selfStatus = status;
+    public get priStatus(): string {
+        if (this.roleStatus) {
+            return this.roleStatus;
+        } else if (this.verticalStatus) {
+            return this.verticalStatus;
+        } else {
+            return this.horizontalStatus;
+        }
     }
 
     // rendering
@@ -154,7 +161,7 @@ export default class Role {
 
     // render the range of attack
     public renderRange() {
-        if (this.status === "left") {
+        if (this.horizontalStatus === "left") {
             Storage.barCtx.fillStyle = "rgba(102, 204, 255, 0.6)";
             Storage.barCtx.beginPath();
             Storage.barCtx.moveTo(this.x - this.attackRange, this.y - 8);
@@ -162,7 +169,7 @@ export default class Role {
             Storage.barCtx.lineTo(this.x, this.y + this.height - 1);
             Storage.barCtx.lineTo(this.x, this.y);
             Storage.barCtx.fill();
-        } else if (this.status === "right") {
+        } else if (this.horizontalStatus === "right") {
             Storage.barCtx.fillStyle = "rgba(102, 204, 255, 0.6)";
             Storage.barCtx.beginPath();
             Storage.barCtx.moveTo(this.x + this.width + this.attackRange - 1, this.y - 8);
@@ -175,7 +182,7 @@ export default class Role {
 
     private renderRole() {
         Storage.mainCtx.drawImage(
-            Storage.images[this.selfStatus],
+            Storage.images[this.priStatus],
             this.x,
             this.y,
             this.width,

@@ -151,24 +151,32 @@ export default class Main {
         }
         if (this.keydown[37]) {
             if (!this.keydown[39]) {
-                this.roles["2"].status = "left";
+                this.roles["2"].horizontalStatus = "left";
                 this.move("2", 0);
             }
         }
         if (this.keydown[39]) {
             if (!this.keydown[37]) {
-                this.roles["2"].status = "right";
+                this.roles["2"].horizontalStatus = "right";
                 this.move("2", 2);
             }
         }
         if (this.roles["2"].verticalTimer) {
-            this.move("2", 1);
+            if (this.roles["2"].jumpSpeed > 0) {
+                this.roles["2"].verticalStatus = "up";
+                this.move("2", 1);
+            } else {
+                this.roles["2"].verticalStatus = "down";
+                this.move("2", 3);
+            }
             this.roles["2"].jumpSpeed--;
         } else {
             this.roles["2"].jumpSpeed = -1;
             this.roles["2"].verticalTimer = true;
         }
         if (this.keycycle[191]) {
+            this.roles["2"].roleStatus = "attack";
+            this.roles["2"].attackTimer = 10;
             for (const aid of this.roles["2"].attackId) {
                 this.roles[aid].healthPoint -= this.roles["2"].attackPower;
             }
@@ -183,20 +191,22 @@ export default class Main {
         }
         if (this.keydown[68]) {
             if (!this.keydown[71]) {
-                this.roles["3"].status = "left";
+                this.roles["3"].horizontalStatus = "left";
                 this.move("3", 0);
             }
         }
         if (this.keydown[71]) {
             if (!this.keydown[68]) {
-                this.roles["3"].status = "right";
+                this.roles["3"].horizontalStatus = "right";
                 this.move("3", 2);
             }
         }
         if (this.roles["3"].verticalTimer) {
             if (this.roles["3"].jumpSpeed > 0) {
+                this.roles["3"].verticalStatus = "up";
                 this.move("3", 1);
             } else {
+                this.roles["3"].verticalStatus = "down";
                 this.move("3", 3);
             }
             this.roles["3"].jumpSpeed--;
@@ -205,6 +215,8 @@ export default class Main {
             this.roles["3"].verticalTimer = true;
         }
         if (this.keycycle[192]) {
+            this.roles["3"].roleStatus = "attack";
+            this.roles["3"].attackTimer = 10;
             for (const aid of this.roles["3"].attackId) {
                 this.roles[aid].healthPoint -= this.roles["3"].attackPower;
             }
@@ -213,6 +225,11 @@ export default class Main {
         this.renderMap();
         for (const key in this.roles) {
             if (this.roles[key]) {
+                if (!this.roles[key].attackTimer && this.roles[key].roleStatus === "attack") {
+                    this.roles[key].roleStatus = undefined;
+                } else {
+                    this.roles[key].attackTimer--;
+                }
                 this.roles[key].render();
                 if (this.ifInAttackRange(key)) {
                     this.roles[key].renderRange();
@@ -225,7 +242,7 @@ export default class Main {
     private ifInAttackRange(id: string): boolean {
         let judge: boolean = false;
         this.roles[id].attackId = [];
-        if (this.roles[id].status === "left") {
+        if (this.roles[id].horizontalStatus === "left") {
             const nleft = this.roles[id].x - this.roles[id].attackRange;
             const nc = (nleft + Storage.sceneWidth) % Storage.sceneWidth;
             const nhead = this.roles[id].y;
@@ -246,7 +263,7 @@ export default class Main {
                     judge = true;
                 }
             }
-        } else if (this.roles[id].status === "right") {
+        } else if (this.roles[id].horizontalStatus === "right") {
             const nright = this.roles[id].x + this.roles[id].width - 1 + this.roles[id].attackRange;
             const nc = (nright + Storage.sceneWidth) % Storage.sceneWidth;
             const nhead = this.roles[id].y;
@@ -318,6 +335,7 @@ export default class Main {
                     if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== +id) {
                         this.roles[id].y--;
                         this.roles[id].verticalTimer = false;
+                        this.roles[id].verticalStatus = undefined;
                         return true;
                     }
                 } else {
