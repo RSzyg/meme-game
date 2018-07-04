@@ -214,6 +214,7 @@ export default class Main {
     }
 
     private ifInAttackRange(id: string): boolean {
+        let judge: boolean = false;
         if (this.roles[id].status === "left") {
             const nleft = this.roles[id].x - this.roles[id].attackRange;
             const nc = (nleft + Storage.sceneWidth) % Storage.sceneWidth;
@@ -222,7 +223,7 @@ export default class Main {
             for (let r = nhead; r < nfoot; r++) {
                 const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.fullyMap[nr][nc] > 1) {
-                    return true;
+                    judge = true;
                 }
             }
         } else if (this.roles[id].status === "right") {
@@ -233,10 +234,11 @@ export default class Main {
             for (let r = nhead; r < nfoot; r++) {
                 const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.fullyMap[nr][nc] > 1) {
-                    return true;
+                    judge = true;
                 }
             }
         }
+        return judge;
     }
 
     // attack judge
