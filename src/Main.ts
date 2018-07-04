@@ -133,11 +133,12 @@ export default class Main {
      * 38 ↑
      * 39 →
      * 40 ↓
-     * 65 A
-     * 87 W
      * 68 D
-     * 83 S
-     * 88 X
+     * 82 R
+     * 71 G
+     * 70 F
+     * 192 `
+     * 191 /
      */
     private update() {
         this.clearScene();
@@ -167,27 +168,27 @@ export default class Main {
             this.roles["2"].jumpSpeed = -1;
             this.roles["2"].verticalTimer = true;
         }
-        if (this.keycycle[88]) {
+        if (this.keycycle[191]) {
             for (const aid of this.roles["2"].attackId) {
                 this.roles[aid].healthPoint -= this.roles["2"].attackPower;
             }
-            this.keycycle[88] = false;
+            this.keycycle[191] = false;
         }
         // player2
-        if (this.keydown[87]) {
+        if (this.keydown[82]) {
             if (!this.roles["3"].verticalTimer) {
                 this.roles["3"].jumpSpeed = this.roles["3"].initJumpSpeed;
                 this.roles["3"].verticalTimer = true;
             }
         }
-        if (this.keydown[65]) {
-            if (!this.keydown[68]) {
+        if (this.keydown[68]) {
+            if (!this.keydown[71]) {
                 this.roles["3"].status = "left";
                 this.move("3", 0);
             }
         }
-        if (this.keydown[68]) {
-            if (!this.keydown[65]) {
+        if (this.keydown[71]) {
+            if (!this.keydown[68]) {
                 this.roles["3"].status = "right";
                 this.move("3", 2);
             }
@@ -202,6 +203,12 @@ export default class Main {
         } else {
             this.roles["3"].jumpSpeed = -1;
             this.roles["3"].verticalTimer = true;
+        }
+        if (this.keycycle[192]) {
+            for (const aid of this.roles["3"].attackId) {
+                this.roles[aid].healthPoint -= this.roles["3"].attackPower;
+            }
+            this.keycycle[192] = false;
         }
         this.renderMap();
         for (const key in this.roles) {
