@@ -103,6 +103,7 @@ export default class Main {
             y: Storage.sceneHeight - 54,
             maxHealthPoint: 100,
             attackPower: 3,
+            attackRange: 8,
             moveSpeed: 4,
             jumpSpeed: 19,
         };
@@ -167,7 +168,7 @@ export default class Main {
             this.roles["2"].verticalTimer = true;
         }
         if (this.keycycle[88]) {
-            this.roles["2"].healthPoint -= this.roles["2"].attackPower;
+            this.attackJudge("2");
             this.keycycle[88] = false;
         }
         // player2
@@ -207,6 +208,46 @@ export default class Main {
             }
         }
         requestAnimationFrame(() => this.update());
+    }
+
+    // attack judge
+    private attackJudge(id: string) {
+        if (this.roles[id].status === "left") {
+            for (const key in this.roles) {
+                if (key !== id) {
+                    const nc = (
+                        this.roles[key].x +
+                        this.roles[key].width +
+                        Storage.sceneWidth +
+                        this.roles[id].attackRange
+                    ) % Storage.sceneWidth;
+                    for (let r = this.roles[key].y; r < this.roles[key].y + this.roles[key].height; r++) {
+                        const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+                        if (Storage.fullyMap[nr][nc] === +id) {
+                            this.roles[key].healthPoint -= this.roles[id].attackPower;
+                            return;
+                        }
+                    }
+                }
+            }
+        } else if (this.roles[id].status === "right") {
+            for (const key in this.roles) {
+                if (key !== id) {
+                    const nc = (
+                        this.roles[key].x - 1 +
+                        Storage.sceneWidth -
+                        this.roles[id].attackRange
+                    ) % Storage.sceneWidth;
+                    for (let r = this.roles[key].y; r < this.roles[key].y + this.roles[key].height; r++) {
+                        const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+                        if (Storage.fullyMap[nr][nc] === +id) {
+                            this.roles[key].healthPoint -= this.roles[id].attackPower;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // move

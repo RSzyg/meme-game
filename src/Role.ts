@@ -11,6 +11,7 @@ export default class Role {
     public healthPoint: number;
     public maxHealthPoint: number;
     public attackPower: number;
+    public attackRange: number;
     public moveSpeed: number;
     public initJumpSpeed: number;
     public jumpSpeed: number;
@@ -39,6 +40,7 @@ export default class Role {
         this.tempStatus = "left";
         this.healthPoint = this.maxHealthPoint = data.maxHealthPoint;
         this.attackPower = data.attackPower;
+        this.attackRange = data.attackRange;
         this.moveSpeed = data.moveSpeed;
         this.initJumpSpeed = this.jumpSpeed = data.jumpSpeed;
     }
