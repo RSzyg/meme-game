@@ -218,8 +218,8 @@ export default class Main {
         this.roles[id].x += Storage.dx[nk] * this.roles[id].moveSpeed;
         const midWidth = this.roles[id].width / 2;
         const midHeight = this.roles[id].height / 2;
-        this.roles[id].x = (this.roles[id].x + Storage.sceneWidth) % Storage.sceneWidth;
-        this.roles[id].y = (this.roles[id].y + Storage.sceneHeight) % Storage.sceneHeight;
+        this.roles[id].x = (this.roles[id].x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
+        this.roles[id].y = (this.roles[id].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
         let isCollide = true;
         while (isCollide) {
             isCollide = this.collisionJudge(id, k);
