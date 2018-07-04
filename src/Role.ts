@@ -150,6 +150,27 @@ export default class Role {
         }
     }
 
+    // render the range of attack
+    public renderRange() {
+        if (this.status === "left") {
+            Storage.barCtx.fillStyle = "rgba(102, 204, 255, 0.6)";
+            Storage.barCtx.beginPath();
+            Storage.barCtx.moveTo(this.x - this.attackRange, this.y - 8);
+            Storage.barCtx.lineTo(this.x - this.attackRange, this.y + this.height + 7);
+            Storage.barCtx.lineTo(this.x, this.y + this.height - 1);
+            Storage.barCtx.lineTo(this.x, this.y);
+            Storage.barCtx.fill();
+        } else if (this.status === "right") {
+            Storage.barCtx.fillStyle = "rgba(102, 204, 255, 0.6)";
+            Storage.barCtx.beginPath();
+            Storage.barCtx.moveTo(this.x + this.width + this.attackRange - 1, this.y - 8);
+            Storage.barCtx.lineTo(this.x + this.width + this.attackRange - 1, this.y + this.height + 7);
+            Storage.barCtx.lineTo(this.x + this.width, this.y + this.height - 1);
+            Storage.barCtx.lineTo(this.x + this.width, this.y);
+            Storage.barCtx.fill();
+        }
+    }
+
     private renderRole() {
         Storage.mainCtx.drawImage(
             Storage.images[this.selfStatus],

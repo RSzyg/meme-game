@@ -103,7 +103,7 @@ export default class Main {
             y: Storage.sceneHeight - 54,
             maxHealthPoint: 100,
             attackPower: 3,
-            attackRange: 8,
+            attackRange: 12,
             moveSpeed: 4,
             jumpSpeed: 19,
         };
@@ -205,9 +205,38 @@ export default class Main {
         for (const key in this.roles) {
             if (this.roles[key]) {
                 this.roles[key].render();
+                if (this.ifInAttackRange(key)) {
+                    this.roles[key].renderRange();
+                }
             }
         }
         requestAnimationFrame(() => this.update());
+    }
+
+    private ifInAttackRange(id: string): boolean {
+        if (this.roles[id].status === "left") {
+            const nleft = this.roles[id].x - this.roles[id].attackRange;
+            const nc = (nleft + Storage.sceneWidth) % Storage.sceneWidth;
+            const nhead = this.roles[id].y;
+            const nfoot = this.roles[id].y + this.roles[id].height;
+            for (let r = nhead; r < nfoot; r++) {
+                const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+                if (Storage.fullyMap[nr][nc] > 1) {
+                    return true;
+                }
+            }
+        } else if (this.roles[id].status === "right") {
+            const nright = this.roles[id].x + this.roles[id].width - 1 + this.roles[id].attackRange;
+            const nc = (nright + Storage.sceneWidth) % Storage.sceneWidth;
+            const nhead = this.roles[id].y;
+            const nfoot = this.roles[id].y + this.roles[id].height;
+            for (let r = nhead; r < nfoot; r++) {
+                const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
+                if (Storage.fullyMap[nr][nc] > 1) {
+                    return true;
+                }
+            }
+        }
     }
 
     // attack judge
