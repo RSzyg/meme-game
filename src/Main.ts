@@ -4,11 +4,11 @@ import Storage from "./Storage";
 export default class Main {
     private roles: {[key: string]: Role};
     private keydown: {[key: number]: boolean};
-    private keycycle: {[key: number]: boolean};
+    private keycount: {[key: number]: number};
     constructor() {
         this.roles = {};
         this.keydown = {};
-        this.keycycle = {};
+        this.keycount = {};
     }
 
     public createScene() {
@@ -113,9 +113,12 @@ export default class Main {
     private keyboardController(e: KeyboardEvent) {
         if (e.type === "keydown") {
             this.keydown[e.keyCode] = true;
+            if (!this.keycount[e.keyCode]) {
+                this.keycount[e.keyCode] = 1;
+            }
         } else if (e.type === "keyup") {
             this.keydown[e.keyCode] = false;
-            this.keycycle[e.keyCode] = true;
+            this.keycount[e.keyCode] = 0;
         }
     }
 
@@ -175,14 +178,14 @@ export default class Main {
                 this.roles["2"].jumpSpeed = -1;
                 this.roles["2"].verticalTimer = true;
             }
-            if (this.keycycle[191]) {
+            if (this.keycount[191] === 1) {
                 this.roles["2"].roleStatus = "attack";
                 this.roles["2"].attackTimer = 10;
                 for (const aid of this.roles["2"].attackId) {
                     this.roles[aid].healthPoint -= this.roles["2"].attackPower;
                     this.roles[aid].deadthController();
                 }
-                this.keycycle[191] = false;
+                this.keycount[191]++;
             }
         }
         // player2
@@ -218,14 +221,14 @@ export default class Main {
                 this.roles["3"].jumpSpeed = -1;
                 this.roles["3"].verticalTimer = true;
             }
-            if (this.keycycle[192]) {
+            if (this.keycount[192] === 1) {
                 this.roles["3"].roleStatus = "attack";
                 this.roles["3"].attackTimer = 10;
                 for (const aid of this.roles["3"].attackId) {
                     this.roles[aid].healthPoint -= this.roles["3"].attackPower;
                     this.roles[aid].deadthController();
                 }
-                this.keycycle[192] = false;
+                this.keycount[192]++;
             }
         }
         this.renderMap();
