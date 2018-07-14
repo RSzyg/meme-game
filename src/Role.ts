@@ -2,7 +2,7 @@ import Storage from "./Storage";
 
 export default class Role {
     private static healthBarHeight: number = 8;
-    private static healthBarWidth: number = 80;
+    private static healthBarWidth: number;
     // keyboardRecorder
     public keyboardRecorder: {[key: string]: number};
     // timer
@@ -36,7 +36,7 @@ export default class Role {
         this.verticalTimer = false;
         // element properties
         this.selfHeight = data.height;
-        this.selfWidth = data.width;
+        this.selfWidth = Role.healthBarWidth = data.width;
         this.selfX = data.x;
         this.selfY = data.y;
         // basic properties
