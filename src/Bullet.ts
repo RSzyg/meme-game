@@ -54,6 +54,7 @@ export default class Bullet {
 
     public move() {
         this.x += this.speed * Storage.dx[this.direction];
+        this.x = (this.x + Storage.sceneWidth) % Storage.sceneWidth;
     }
 
     public render() {

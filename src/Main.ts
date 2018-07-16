@@ -77,7 +77,7 @@ export default class Main {
             attackRange: 12,
             moveSpeed: 4,
             jumpSpeed: 19,
-            weapon: "gun",
+            weapon: id === "2" ? null : "gun",
         };
         this.roles[id] = new Role(data);
     }
@@ -220,11 +220,24 @@ export default class Main {
             if (this.roles["3"].action === undefined && this.keycount[49] === 1) {
                 this.roles["3"].action = "attack";
                 this.roles["3"].attackKeepTimer = 10;
-                for (const aid of this.roles["3"].attackId) {
-                    if (this.roles[aid].action !== "defense") {
-                        this.roles[aid].healthPoint -= this.roles["3"].attackPower;
-                        this.roles[aid].deadthController();
-                    }
+                switch (this.roles["3"].weapon) {
+                    case "gun":
+                        this.bullets[this.bulletId++] = new Bullet(
+                            this.roles["3"].x + 20,
+                            this.roles["3"].y + this.roles["3"].height / 2,
+                            6,
+                            "3",
+                            this.roles["3"].horizonDirection,
+                        );
+                        break;
+                    default:
+                        for (const aid of this.roles["3"].attackId) {
+                            if (this.roles[aid].action !== "defense") {
+                                this.roles[aid].healthPoint -= this.roles["3"].attackPower;
+                                this.roles[aid].deadthController();
+                            }
+                        }
+                        break;
                 }
                 this.keycount[49]++;
             }
