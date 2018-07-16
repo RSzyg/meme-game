@@ -189,7 +189,10 @@ export default class Role {
     }
 
     private renderRole() {
-        const name: string = this.priStatus + "-" + this.horizonDirection;
+        let name: string = this.priStatus + "-" + this.horizonDirection;
+        if (this.priStatus === "dead") {
+            name = "dead";
+        }
         Storage.main.ctx.drawImage(
             Storage.images[name],
             this.x,

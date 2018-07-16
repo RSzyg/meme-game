@@ -169,7 +169,6 @@ export default class Main {
                         for (const aid of this.roles["2"].attackId) {
                             if (this.roles[aid].action !== "defense") {
                                 this.roles[aid].healthPoint -= this.roles["2"].attackPower;
-                                this.roles[aid].deadthController();
                             }
                         }
                         break;
@@ -234,7 +233,6 @@ export default class Main {
                         for (const aid of this.roles["3"].attackId) {
                             if (this.roles[aid].action !== "defense") {
                                 this.roles[aid].healthPoint -= this.roles["3"].attackPower;
-                                this.roles[aid].deadthController();
                             }
                         }
                         break;
@@ -252,6 +250,7 @@ export default class Main {
         this.renderMap();
         for (const key in this.roles) {
             if (this.roles[key]) {
+                this.roles[key].deadthController();
                 if (!this.roles[key].attackKeepTimer && this.roles[key].action === "attack") {
                     this.roles[key].action = undefined;
                 } else {
