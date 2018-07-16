@@ -9,6 +9,7 @@ window.onload = () => {
         "./resource/left.jpg",
         "./resource/right.jpg",
         "./resource/attack.jpg",
+        "./resource/defense.jpg",
         "./resource/dead.jpeg",
     ];
     const total: number = imgSrcArr.length;

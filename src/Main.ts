@@ -106,6 +106,8 @@ export default class Main {
      * 82 R
      * 71 G
      * 70 F
+     * 49 1
+     * 190 .
      * 192 `
      * 191 /
      */
@@ -144,14 +146,23 @@ export default class Main {
                 this.roles["2"].jumpSpeed = -1;
                 this.roles["2"].verticalTimer = true;
             }
-            if (this.keycount[191] === 1) {
+            if (this.roles["2"].roleStatus === undefined && this.keycount[191] === 1) {
                 this.roles["2"].roleStatus = "attack";
-                this.roles["2"].attackTimer = 10;
+                this.roles["2"].attackKeepTimer = 10;
                 for (const aid of this.roles["2"].attackId) {
-                    this.roles[aid].healthPoint -= this.roles["2"].attackPower;
-                    this.roles[aid].deadthController();
+                    if (this.roles[aid].roleStatus !== "defense") {
+                        this.roles[aid].healthPoint -= this.roles["2"].attackPower;
+                        this.roles[aid].deadthController();
+                    }
                 }
                 this.keycount[191]++;
+            }
+            if (this.keydown[190]) {
+                if (this.roles["2"].roleStatus === undefined) {
+                    this.roles["2"].roleStatus = "defense";
+                }
+            } else if (this.roles["2"].roleStatus === "defense") {
+                this.roles["2"].roleStatus = undefined;
             }
         }
         // player2
@@ -187,23 +198,32 @@ export default class Main {
                 this.roles["3"].jumpSpeed = -1;
                 this.roles["3"].verticalTimer = true;
             }
-            if (this.keycount[192] === 1) {
+            if (this.roles["3"].roleStatus === undefined && this.keycount[49] === 1) {
                 this.roles["3"].roleStatus = "attack";
-                this.roles["3"].attackTimer = 10;
+                this.roles["3"].attackKeepTimer = 10;
                 for (const aid of this.roles["3"].attackId) {
-                    this.roles[aid].healthPoint -= this.roles["3"].attackPower;
-                    this.roles[aid].deadthController();
+                    if (this.roles[aid].roleStatus !== "defense") {
+                        this.roles[aid].healthPoint -= this.roles["3"].attackPower;
+                        this.roles[aid].deadthController();
+                    }
                 }
-                this.keycount[192]++;
+                this.keycount[49]++;
+            }
+            if (this.keydown[192]) {
+                if (this.roles["3"].roleStatus === undefined) {
+                    this.roles["3"].roleStatus = "defense";
+                }
+            } else if (this.roles["3"].roleStatus === "defense") {
+                this.roles["3"].roleStatus = undefined;
             }
         }
         this.renderMap();
         for (const key in this.roles) {
             if (this.roles[key]) {
-                if (!this.roles[key].attackTimer && this.roles[key].roleStatus === "attack") {
+                if (!this.roles[key].attackKeepTimer && this.roles[key].roleStatus === "attack") {
                     this.roles[key].roleStatus = undefined;
                 } else {
-                    this.roles[key].attackTimer--;
+                    this.roles[key].attackKeepTimer--;
                 }
                 this.roles[key].render();
                 if (this.ifInAttackRange(key)) {

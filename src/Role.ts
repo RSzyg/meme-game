@@ -6,7 +6,7 @@ export default class Role {
     // keyboardRecorder
     public keyboardRecorder: {[key: string]: number};
     // timer
-    public attackTimer: number;
+    public attackKeepTimer: number;
     public verticalTimer: boolean;
     // basic properties
     public healthPoint: number;
@@ -32,7 +32,7 @@ export default class Role {
         // keyboardRecorder
         this.keyboardRecorder = {};
         // timer
-        this.attackTimer = 0;
+        this.attackKeepTimer = 0;
         this.verticalTimer = false;
         // element properties
         this.selfHeight = data.height;
