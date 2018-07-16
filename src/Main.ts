@@ -1,3 +1,4 @@
+import Canvas from "./Canvas";
 import Role from "./Role";
 import Storage from "./Storage";
 
@@ -13,51 +14,16 @@ export default class Main {
 
     public createScene() {
         // create mini-self-role canvas
-        Storage.miniSelfRoleCanvas = document.createElement("canvas");
-        Storage.miniSelfRoleCanvas.style.zIndex = "4";
-        Storage.miniSelfRoleCanvas.style.position = "absolute";
-        Storage.miniSelfRoleCanvas.style.right = "0px";
-        Storage.miniSelfRoleCanvas.style.top = "0px";
-        Storage.miniSelfRoleCanvas.height = 150;
-        Storage.miniSelfRoleCanvas.width = 200;
-        document.getElementById("display").appendChild(Storage.miniSelfRoleCanvas);
-        Storage.miniSelfRoleCtx = Storage.miniSelfRoleCanvas.getContext("2d");
+        Storage.miniSelfRole = new Canvas("4", 150, 200, "upperRight");
         // create mini-other-role canvas
-        Storage.miniOtherRoleCanvas = document.createElement("canvas");
-        Storage.miniOtherRoleCanvas.style.zIndex = "4";
-        Storage.miniOtherRoleCanvas.style.position = "absolute";
-        Storage.miniOtherRoleCanvas.style.right = "0px";
-        Storage.miniOtherRoleCanvas.style.top = "0px";
-        Storage.miniOtherRoleCanvas.height = 150;
-        Storage.miniOtherRoleCanvas.width = 200;
-        document.getElementById("display").appendChild(Storage.miniOtherRoleCanvas);
-        Storage.miniOtherRoleCtx = Storage.miniOtherRoleCanvas.getContext("2d");
+        Storage.miniOtherRole = new Canvas("4", 150, 200, "upperRight");
         // create mini-map canvas
-        Storage.miniMapCanvas = document.createElement("canvas");
-        Storage.miniMapCanvas.style.zIndex = "3";
-        Storage.miniMapCanvas.style.position = "absolute";
-        Storage.miniMapCanvas.style.right = "0px";
-        Storage.miniMapCanvas.style.top = "0px";
-        Storage.miniMapCanvas.height = 150;
-        Storage.miniMapCanvas.width = 200;
-        document.getElementById("display").appendChild(Storage.miniMapCanvas);
-        Storage.miniMapCtx = Storage.miniMapCanvas.getContext("2d");
+        Storage.miniMap = new Canvas("3", 150, 200, "upperRight");
         // create bar canvas
-        Storage.barCanvas = document.createElement("canvas");
-        Storage.barCanvas.style.zIndex = "2";
-        Storage.barCanvas.style.position = "absolute";
-        Storage.barCanvas.height = Storage.sceneHeight;
-        Storage.barCanvas.width = Storage.sceneWidth;
-        document.getElementById("display").appendChild(Storage.barCanvas);
-        Storage.barCtx = Storage.barCanvas.getContext("2d");
+        Storage.bar = new Canvas("2", Storage.sceneHeight, Storage.sceneWidth, null);
         // create main canvas
-        Storage.mainCanvas = document.createElement("canvas");
-        Storage.mainCanvas.style.zIndex = "1";
-        Storage.mainCanvas.style.position = "absolute";
-        Storage.mainCanvas.height = Storage.sceneHeight;
-        Storage.mainCanvas.width = Storage.sceneWidth;
-        document.getElementById("display").appendChild(Storage.mainCanvas);
-        Storage.mainCtx = Storage.mainCanvas.getContext("2d");
+        Storage.main = new Canvas("1", Storage.sceneHeight, Storage.sceneWidth, null);
+
         this.renderMap();
         this.createRole("2");
         this.createRole("3");
@@ -72,23 +38,23 @@ export default class Main {
         for (let r = 0; r < Storage.simplifiedMap.length; r++) {
             for (let c = 0; c < Storage.simplifiedMap[r].length; c++) {
                 if (Storage.simplifiedMap[r][c] === 1) {
-                    Storage.mainCtx.fillStyle = "#ffffff";
-                    Storage.mainCtx.fillRect(c * 40, r * 40, 40, 40);
-                    Storage.mainCtx.strokeRect(c * 40, r * 40, 40, 40);
+                    Storage.main.ctx.fillStyle = "#ffffff";
+                    Storage.main.ctx.fillRect(c * 40, r * 40, 40, 40);
+                    Storage.main.ctx.strokeRect(c * 40, r * 40, 40, 40);
                 }
             }
         }
     }
 
     private renderMiniMap() {
-        Storage.miniMapCtx.globalAlpha = 0.4;
-        Storage.miniMapCtx.fillStyle = "#ffffff";
-        Storage.miniMapCtx.fillRect(0, 0, 200, 150);
+        Storage.miniMap.ctx.globalAlpha = 0.4;
+        Storage.miniMap.ctx.fillStyle = "#ffffff";
+        Storage.miniMap.ctx.fillRect(0, 0, 200, 150);
         for (let r = 0; r < Storage.simplifiedMap.length; r++) {
             for (let c = 0; c < Storage.simplifiedMap[r].length; c++) {
                 if (Storage.simplifiedMap[r][c] === 1) {
-                    Storage.miniMapCtx.fillStyle = "#000000";
-                    Storage.miniMapCtx.fillRect(c * 10, r * 10, 10, 10);
+                    Storage.miniMap.ctx.fillStyle = "#000000";
+                    Storage.miniMap.ctx.fillRect(c * 10, r * 10, 10, 10);
                 }
             }
         }
@@ -123,12 +89,12 @@ export default class Main {
     }
 
     private clearScene() {
-        Storage.mainCanvas.height = Storage.mainCanvas.height;
-        Storage.barCanvas.height = Storage.barCanvas.height;
-        Storage.miniSelfRoleCanvas.height = Storage.miniSelfRoleCanvas.height;
-        Storage.miniSelfRoleCtx.globalAlpha = 0.5;
-        Storage.miniOtherRoleCanvas.height = Storage.miniOtherRoleCanvas.height;
-        Storage.miniOtherRoleCtx.globalAlpha = 0.5;
+        Storage.main.canvas.height = Storage.main.canvas.height;
+        Storage.bar.canvas.height = Storage.bar.canvas.height;
+        Storage.miniSelfRole.canvas.height = Storage.miniSelfRole.canvas.height;
+        Storage.miniSelfRole.ctx.globalAlpha = 0.5;
+        Storage.miniOtherRole.canvas.height = Storage.miniOtherRole.canvas.height;
+        Storage.miniOtherRole.ctx.globalAlpha = 0.5;
     }
 
     /**

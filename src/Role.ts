@@ -170,26 +170,26 @@ export default class Role {
     // render the range of attack
     public renderRange() {
         if (this.horizontalStatus === "left") {
-            Storage.barCtx.fillStyle = "rgba(102, 204, 255, 0.6)";
-            Storage.barCtx.beginPath();
-            Storage.barCtx.moveTo(this.x - this.attackRange, this.y - 8);
-            Storage.barCtx.lineTo(this.x - this.attackRange, this.y + this.height + 7);
-            Storage.barCtx.lineTo(this.x, this.y + this.height - 1);
-            Storage.barCtx.lineTo(this.x, this.y);
-            Storage.barCtx.fill();
+            Storage.bar.ctx.fillStyle = "rgba(102, 204, 255, 0.6)";
+            Storage.bar.ctx.beginPath();
+            Storage.bar.ctx.moveTo(this.x - this.attackRange, this.y - 8);
+            Storage.bar.ctx.lineTo(this.x - this.attackRange, this.y + this.height + 7);
+            Storage.bar.ctx.lineTo(this.x, this.y + this.height - 1);
+            Storage.bar.ctx.lineTo(this.x, this.y);
+            Storage.bar.ctx.fill();
         } else if (this.horizontalStatus === "right") {
-            Storage.barCtx.fillStyle = "rgba(102, 204, 255, 0.6)";
-            Storage.barCtx.beginPath();
-            Storage.barCtx.moveTo(this.x + this.width + this.attackRange - 1, this.y - 8);
-            Storage.barCtx.lineTo(this.x + this.width + this.attackRange - 1, this.y + this.height + 7);
-            Storage.barCtx.lineTo(this.x + this.width, this.y + this.height - 1);
-            Storage.barCtx.lineTo(this.x + this.width, this.y);
-            Storage.barCtx.fill();
+            Storage.bar.ctx.fillStyle = "rgba(102, 204, 255, 0.6)";
+            Storage.bar.ctx.beginPath();
+            Storage.bar.ctx.moveTo(this.x + this.width + this.attackRange - 1, this.y - 8);
+            Storage.bar.ctx.lineTo(this.x + this.width + this.attackRange - 1, this.y + this.height + 7);
+            Storage.bar.ctx.lineTo(this.x + this.width, this.y + this.height - 1);
+            Storage.bar.ctx.lineTo(this.x + this.width, this.y);
+            Storage.bar.ctx.fill();
         }
     }
 
     private renderRole() {
-        Storage.mainCtx.drawImage(
+        Storage.main.ctx.drawImage(
             Storage.images[this.priStatus],
             this.x,
             this.y,
@@ -200,15 +200,15 @@ export default class Role {
 
     private renderHealthBar() {
         const index: number = Math.floor((this.healthPoint + 0.2 * this.maxHealthPoint) / (0.4 * this.maxHealthPoint));
-        Storage.barCtx.strokeStyle = "#000000";
-        Storage.barCtx.strokeRect(
+        Storage.bar.ctx.strokeStyle = "#000000";
+        Storage.bar.ctx.strokeRect(
             this.x - (Role.healthBarWidth - this.width) / 2,
             this.y - 16,
             Role.healthBarWidth,
             Role.healthBarHeight,
         );
-        Storage.barCtx.fillStyle = Storage.healthBarColor[index];
-        Storage.barCtx.fillRect(
+        Storage.bar.ctx.fillStyle = Storage.healthBarColor[index];
+        Storage.bar.ctx.fillRect(
             this.x - (Role.healthBarWidth - this.width) / 2 + 1,
             this.y - 15,
             this.healthPoint / this.maxHealthPoint * Role.healthBarWidth * 0.98,
@@ -220,10 +220,10 @@ export default class Role {
         let ctx: CanvasRenderingContext2D;
         let color: string;
         if (this.roleId === "2") {
-            ctx = Storage.miniSelfRoleCtx;
+            ctx = Storage.miniSelfRole.ctx;
             color = "green";
         } else {
-            ctx = Storage.miniOtherRoleCtx;
+            ctx = Storage.miniOtherRole.ctx;
             color = "red";
         }
         ctx.arc(
