@@ -5,8 +5,10 @@
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack && electron .",
-    "watch": "webpack --watch --mode development"
+    "build": "webpack --mode development",
+    "watch": "webpack --watch --mode development",
+    "electron": "electron .",
+    "packager": "webpack && electron-packager . --platform=linux --electron-version=2.0.5  --overwrite"
   },
   "repository": {
     "type": "git",
