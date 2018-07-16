@@ -17,9 +17,9 @@ export default class Role {
     public initJumpSpeed: number;
     public jumpSpeed: number;
     public attackId: string[];
-    public horizontalStatus: string; // left, right (default right)
-    public verticalStatus: string; // up, down (default undefined)
-    public roleStatus: string; // dead, attack (default undefined)
+    public horizonDirection: string; // left, right (default right)
+    public status: string; // up, down (default undefined)
+    public action: string; // dead, attack (default undefined)
     // element properties
     private roleId: string;
     private selfHeight: number;
@@ -40,9 +40,9 @@ export default class Role {
         this.selfX = data.x;
         this.selfY = data.y;
         // basic properties
-        this.horizontalStatus = "left";
-        this.verticalStatus = undefined;
-        this.roleStatus = undefined;
+        this.horizonDirection = "left";
+        this.status = "walk";
+        this.action = undefined;
         this.healthPoint = this.maxHealthPoint = data.maxHealthPoint;
         this.attackPower = data.attackPower;
         this.attackRange = data.attackRange;
@@ -81,12 +81,10 @@ export default class Role {
     }
 
     public get priStatus(): string {
-        if (this.roleStatus) {
-            return this.roleStatus;
-        } else if (this.verticalStatus) {
-            return this.verticalStatus;
-        } else {
-            return this.horizontalStatus;
+        if (this.action) {
+            return this.action;
+        } else if (this.status) {
+            return this.status;
         }
     }
 
@@ -94,7 +92,7 @@ export default class Role {
     public deadthController() {
         if (this.healthPoint < 0) {
             this.healthPoint = 0;
-            this.roleStatus = "dead";
+            this.action = "dead";
         }
     }
 
@@ -169,7 +167,7 @@ export default class Role {
 
     // render the range of attack
     public renderRange() {
-        if (this.horizontalStatus === "left") {
+        if (this.horizonDirection === "left") {
             Storage.bar.ctx.fillStyle = "rgba(102, 204, 255, 0.6)";
             Storage.bar.ctx.beginPath();
             Storage.bar.ctx.moveTo(this.x - this.attackRange, this.y - 8);
@@ -177,7 +175,7 @@ export default class Role {
             Storage.bar.ctx.lineTo(this.x, this.y + this.height - 1);
             Storage.bar.ctx.lineTo(this.x, this.y);
             Storage.bar.ctx.fill();
-        } else if (this.horizontalStatus === "right") {
+        } else if (this.horizonDirection === "right") {
             Storage.bar.ctx.fillStyle = "rgba(102, 204, 255, 0.6)";
             Storage.bar.ctx.beginPath();
             Storage.bar.ctx.moveTo(this.x + this.width + this.attackRange - 1, this.y - 8);
@@ -189,8 +187,9 @@ export default class Role {
     }
 
     private renderRole() {
+        const name: string = this.priStatus + "-" + this.horizonDirection;
         Storage.main.ctx.drawImage(
-            Storage.images[this.priStatus],
+            Storage.images[name],
             this.x,
             this.y,
             this.width,

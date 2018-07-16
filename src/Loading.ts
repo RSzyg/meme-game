@@ -4,12 +4,16 @@ import Storage from "./Storage";
 window.onload = () => {
     const main: Main = new Main();
     const imgSrcArr: string[] = [
-        "./resource/up.jpg",
-        "./resource/down.jpg",
-        "./resource/left.jpg",
-        "./resource/right.jpg",
-        "./resource/attack.jpg",
-        "./resource/defense.jpg",
+        "./resource/up-left.png",
+        "./resource/up-right.png",
+        "./resource/down-left.png",
+        "./resource/down-right.png",
+        "./resource/walk-left.jpg",
+        "./resource/walk-right.jpg",
+        "./resource/attack-left.png",
+        "./resource/attack-right.png",
+        "./resource/defense-left.png",
+        "./resource/defense-right.png",
         "./resource/dead.jpeg",
     ];
     const total: number = imgSrcArr.length;
