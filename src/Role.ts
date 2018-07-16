@@ -9,6 +9,7 @@ export default class Role {
     public attackKeepTimer: number;
     public verticalTimer: boolean;
     // basic properties
+    public weapon: string;
     public healthPoint: number;
     public maxHealthPoint: number;
     public attackPower: number;
@@ -40,6 +41,7 @@ export default class Role {
         this.selfX = data.x;
         this.selfY = data.y;
         // basic properties
+        this.weapon = data.weapon;
         this.horizonDirection = "left";
         this.status = "walk";
         this.action = undefined;

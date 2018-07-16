@@ -1,15 +1,20 @@
+import Bullet from "./Bullet";
 import Canvas from "./Canvas";
 import Role from "./Role";
 import Storage from "./Storage";
 
 export default class Main {
     private roles: {[key: string]: Role};
+    private bullets: {[key: string]: Bullet};
     private keydown: {[key: number]: boolean};
     private keycount: {[key: number]: number};
+    private bulletId: number;
     constructor() {
         this.roles = {};
+        this.bullets = {};
         this.keydown = {};
         this.keycount = {};
+        this.bulletId = 0;
     }
 
     public createScene() {
@@ -72,6 +77,7 @@ export default class Main {
             attackRange: 12,
             moveSpeed: 4,
             jumpSpeed: 19,
+            weapon: "gun",
         };
         this.roles[id] = new Role(data);
     }
@@ -149,11 +155,24 @@ export default class Main {
             if (this.roles["2"].action === undefined && this.keycount[191] === 1) {
                 this.roles["2"].action = "attack";
                 this.roles["2"].attackKeepTimer = 10;
-                for (const aid of this.roles["2"].attackId) {
-                    if (this.roles[aid].action !== "defense") {
-                        this.roles[aid].healthPoint -= this.roles["2"].attackPower;
-                        this.roles[aid].deadthController();
-                    }
+                switch (this.roles["2"].weapon) {
+                    case "gun":
+                        this.bullets[this.bulletId++] = new Bullet(
+                            this.roles["2"].x + 20,
+                            this.roles["2"].y + this.roles["2"].height / 2,
+                            6,
+                            "2",
+                            this.roles["2"].horizonDirection,
+                        );
+                        break;
+                    default:
+                        for (const aid of this.roles["2"].attackId) {
+                            if (this.roles[aid].action !== "defense") {
+                                this.roles[aid].healthPoint -= this.roles["2"].attackPower;
+                                this.roles[aid].deadthController();
+                            }
+                        }
+                        break;
                 }
                 this.keycount[191]++;
             }
@@ -231,6 +250,15 @@ export default class Main {
                 }
             }
         }
+        for (const key in this.bullets) {
+            if (this.bullets[key]) {
+                this.bullets[key].render();
+                this.bullets[key].move();
+                if (this.collisionJudge(this.bullets[key], this.bullets[key].direction)) {
+                    delete this.bullets[key];
+                }
+            }
+        }
         requestAnimationFrame(() => this.update());
     }
 
@@ -296,48 +324,76 @@ export default class Main {
         this.roles[id].y = (this.roles[id].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
         let isCollide = true;
         while (isCollide) {
-            isCollide = this.collisionJudge(id, k);
+            isCollide = this.collisionJudge(this.roles[id], k);
         }
         this.roles[id].removeFlag(nx, ny, k);
     }
 
     // handle while hit
-    private collisionJudge(id: string, k: number): boolean {
+    private collisionJudge(obj: {[key: string]: any}, k: number): boolean {
         if (Math.abs(Storage.dx[k])) {
-            const nleft = (this.roles[id].x + Storage.sceneWidth) % Storage.sceneWidth;
-            const nright = (this.roles[id].x - 1 + this.roles[id].width + Storage.sceneWidth) % Storage.sceneWidth;
-            for (let r = this.roles[id].y; r < this.roles[id].y + this.roles[id].height; r++) {
+            const nleft = (obj.x + Storage.sceneWidth) % Storage.sceneWidth;
+            const nright = (obj.x - 1 + obj.width + Storage.sceneWidth) % Storage.sceneWidth;
+            for (let r = obj.y; r < obj.y + obj.height; r++) {
                 const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.dx[k] > 0) {
-                    if (Storage.fullyMap[nr][nright] && Storage.fullyMap[nr][nright] !== +id) {
-                        this.roles[id].x--;
-                        return true;
+                    if (obj.roleId) {
+                        if (Storage.fullyMap[nr][nright] && Storage.fullyMap[nr][nright] !== +obj.roleId) {
+                            obj.x--;
+                            return true;
+                        }
+                    } else if (obj.hostId) {
+                        if (Storage.fullyMap[nr][nright] && Storage.fullyMap[nr][nright] !== +obj.hostId) {
+                            this.roles[Storage.fullyMap[nr][nright]].healthPoint -= this.roles[obj.hostId].attackPower;
+                            return true;
+                        }
                     }
                 } else {
-                    if (Storage.fullyMap[nr][nleft] && Storage.fullyMap[nr][nleft] !== +id) {
-                        this.roles[id].x++;
-                        return true;
+                    if (obj.roleId) {
+                        if (Storage.fullyMap[nr][nleft] && Storage.fullyMap[nr][nleft] !== +obj.roleId) {
+                            obj.x++;
+                            return true;
+                        }
+                    } else if (obj.hostId) {
+                        if (Storage.fullyMap[nr][nleft] && Storage.fullyMap[nr][nleft] !== +obj.hostId) {
+                            this.roles[Storage.fullyMap[nr][nleft]].healthPoint -= this.roles[obj.hostId].attackPower;
+                            return true;
+                        }
                     }
                 }
             }
         }
         if (Math.abs(Storage.dy[k])) {
-            const nhead = (this.roles[id].y + Storage.sceneHeight) % Storage.sceneHeight;
-            const nfoot = (this.roles[id].y + this.roles[id].height - 1 + Storage.sceneHeight) % Storage.sceneHeight;
-            for (let c = this.roles[id].x; c < this.roles[id].x + this.roles[id].width; c++) {
+            const nhead = (obj.y + Storage.sceneHeight) % Storage.sceneHeight;
+            const nfoot = (obj.y + obj.height - 1 + Storage.sceneHeight) % Storage.sceneHeight;
+            for (let c = obj.x; c < obj.x + obj.width; c++) {
                 const nc = (c + Storage.sceneWidth) % Storage.sceneWidth;
-                if (this.roles[id].jumpSpeed < 0) {
-                    if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== +id) {
-                        this.roles[id].y--;
-                        this.roles[id].verticalTimer = false;
-                        this.roles[id].status = "walk";
-                        return true;
+                if (obj.jumpSpeed &&  obj.jumpSpeed < 0) {
+                    if (obj.roleId) {
+                        if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== +obj.roleId) {
+                            obj.y--;
+                            obj.verticalTimer = false;
+                            obj.status = "walk";
+                            return true;
+                        }
+                    } else if (obj.hostId) {
+                        if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== +obj.hostId) {
+                            this.roles[Storage.fullyMap[nfoot][nc]].healthPoint -= this.roles[obj.hostId].attackPower;
+                            return true;
+                        }
                     }
                 } else {
-                    if (Storage.fullyMap[nhead][nc] && Storage.fullyMap[nhead][nc] !== +id) {
-                        this.roles[id].y++;
-                        this.roles[id].jumpSpeed = 1;
-                        return true;
+                    if (obj.roleId) {
+                        if (Storage.fullyMap[nhead][nc] && Storage.fullyMap[nhead][nc] !== +obj.roleId) {
+                            obj.y++;
+                            obj.jumpSpeed = 1;
+                            return true;
+                        }
+                    } else if (obj.hostId) {
+                        if (Storage.fullyMap[nhead][nc] && Storage.fullyMap[nhead][nc] !== +obj.hostId) {
+                            this.roles[Storage.fullyMap[nhead][nc]].healthPoint -= this.roles[obj.hostId].attackPower;
+                            return true;
+                        }
                     }
                 }
             }

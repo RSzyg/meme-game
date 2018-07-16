@@ -15,6 +15,7 @@ window.onload = () => {
         "./resource/defense-left.png",
         "./resource/defense-right.png",
         "./resource/dead.jpeg",
+        "./resource/funny.png",
     ];
     const total: number = imgSrcArr.length;
     let current: number = 0;
