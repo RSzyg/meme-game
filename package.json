@@ -2,10 +2,10 @@
   "name": "meme-game",
   "version": "1.0.0",
   "description": "A series of games about meme",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode development",
+    "build": "webpack && electron .",
     "watch": "webpack --watch --mode development"
   },
   "repository": {
@@ -14,12 +14,14 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/RSzyh/meme-game/issues"
   },
   "homepage": "https://github.com/RSzyh/meme-game#readme",
   "devDependencies": {
+    "electron": "^2.0.5",
+    "electron-packager": "^12.1.0",
     "tslint": "^5.10.0",
     "tslint-loader": "^3.6.0",
     "webpack": "^4.12.2",
