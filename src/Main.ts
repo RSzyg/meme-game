@@ -3,12 +3,25 @@ import Canvas from "./Canvas";
 import Role from "./Role";
 import Storage from "./Storage";
 
+/**
+ * Class Main
+ * The main part of the game. Including scene and roles interaction.
+ * @prop {object} roles - All roles in the scene
+ * @prop {object} bullets - All bullets in the scene
+ * @prop {object} keydown - Record the key down
+ * @prop {object} keycount - Record the key executed times
+ * @prop {number} bulletId - The auto increment id of bullet
+ */
 export default class Main {
     private roles: {[key: string]: Role};
     private bullets: {[key: string]: Bullet};
     private keydown: {[key: number]: boolean};
     private keycount: {[key: number]: number};
     private bulletId: number;
+
+    /**
+     * Create main environment
+     */
     constructor() {
         this.roles = {};
         this.bullets = {};
@@ -17,16 +30,20 @@ export default class Main {
         this.bulletId = 0;
     }
 
+    /**
+     * Create a scene
+     * The entry method
+     */
     public createScene() {
-        // create mini-self-role canvas
+        /** Create mini-self-role canvas */
         Storage.miniSelfRole = new Canvas("4", 150, 200, "upperRight");
-        // create mini-other-role canvas
+        /** Create mini-other-role canvas */
         Storage.miniOtherRole = new Canvas("4", 150, 200, "upperRight");
-        // create mini-map canvas
+        /** Create mini-map canvas */
         Storage.miniMap = new Canvas("3", 150, 200, "upperRight");
-        // create bar canvas
+        /** Create bar canvas */
         Storage.bar = new Canvas("2", Storage.sceneHeight, Storage.sceneWidth, null);
-        // create main canvas
+        /** Create main canvas */
         Storage.main = new Canvas("1", Storage.sceneHeight, Storage.sceneWidth, null);
 
         this.renderMap();
@@ -39,6 +56,9 @@ export default class Main {
         document.addEventListener("keyup", (e) => this.keyboardController(e));
     }
 
+    /**
+     * Render the map
+     */
     private renderMap() {
         for (let r = 0; r < Storage.simplifiedMap.length; r++) {
             for (let c = 0; c < Storage.simplifiedMap[r].length; c++) {
@@ -51,6 +71,9 @@ export default class Main {
         }
     }
 
+    /**
+     * Render the mini-map
+     */
     private renderMiniMap() {
         Storage.miniMap.ctx.globalAlpha = 0.4;
         Storage.miniMap.ctx.fillStyle = "#ffffff";
@@ -65,7 +88,14 @@ export default class Main {
         }
     }
 
+    /**
+     * Create a role
+     * @param {string} id The role's id 
+     */
     private createRole(id: string) {
+        /**
+         * Init basic infomation of roles
+         */
         const data = {
             roleId: id,
             width: 54,
@@ -82,6 +112,10 @@ export default class Main {
         this.roles[id] = new Role(data);
     }
 
+    /**
+     * Pretreatment of keyboard event
+     * @param {KeyboardEvent} e - The keyboard event
+     */
     private keyboardController(e: KeyboardEvent) {
         if (e.type === "keydown") {
             this.keydown[e.keyCode] = true;
@@ -94,6 +128,9 @@ export default class Main {
         }
     }
 
+    /**
+     * Clear the scene
+     */
     private clearScene() {
         Storage.main.canvas.height = Storage.main.canvas.height;
         Storage.bar.canvas.height = Storage.bar.canvas.height;
@@ -104,36 +141,46 @@ export default class Main {
     }
 
     /**
-     * 37 ←
-     * 38 ↑
-     * 39 →
+     * Update the scene 60fps
      * 40 ↓
-     * 68 D
-     * 82 R
-     * 71 G
      * 70 F
-     * 49 1
-     * 190 .
-     * 192 `
-     * 191 /
+     * 
      */
     private update() {
         this.clearScene();
-        // player1
+        /**
+         * Player1
+         * id: "2"
+         */
         if (this.roles["2"].action !== "dead") {
             if (this.keydown[38]) {
+                /**
+                 * key: ↑
+                 * keycode: 38
+                 * action: jump
+                 */
                 if (!this.roles["2"].verticalTimer) {
                     this.roles["2"].jumpSpeed = this.roles["2"].initJumpSpeed;
                     this.roles["2"].verticalTimer = true;
                 }
             }
             if (this.keydown[37]) {
+                /**
+                 * key: ←
+                 * keycode: 37
+                 * action: move left
+                 */
                 if (!this.keydown[39]) {
                     this.roles["2"].horizonDirection = "left";
                     this.move("2", 0);
                 }
             }
             if (this.keydown[39]) {
+                /**
+                 * key: →
+                 * keycode: 39
+                 * action: move right
+                 */
                 if (!this.keydown[37]) {
                     this.roles["2"].horizonDirection = "right";
                     this.move("2", 2);
@@ -153,6 +200,11 @@ export default class Main {
                 this.roles["2"].verticalTimer = true;
             }
             if (this.roles["2"].action === undefined && this.keycount[191] === 1) {
+                /**
+                 * key: /
+                 * keycode: 191
+                 * action: attack
+                 */
                 this.roles["2"].action = "attack";
                 this.roles["2"].attackKeepTimer = 10;
                 switch (this.roles["2"].weapon) {
@@ -176,6 +228,11 @@ export default class Main {
                 this.keycount[191]++;
             }
             if (this.keydown[190]) {
+                /**
+                 * key: .
+                 * keycode: 190
+                 * action: defense
+                 */
                 if (this.roles["2"].action === undefined) {
                     this.roles["2"].action = "defense";
                 }
@@ -183,21 +240,39 @@ export default class Main {
                 this.roles["2"].action = undefined;
             }
         }
-        // player2
+        /**
+         * Player2
+         * id: "3"
+         */
         if (this.roles["3"].action !== "dead") {
             if (this.keydown[82]) {
+                /**
+                 * key: R
+                 * keycode: 82
+                 * action: jump
+                 */
                 if (!this.roles["3"].verticalTimer) {
                     this.roles["3"].jumpSpeed = this.roles["3"].initJumpSpeed;
                     this.roles["3"].verticalTimer = true;
                 }
             }
             if (this.keydown[68]) {
+                /**
+                 * key: D
+                 * keycode: 68
+                 * action: move left
+                 */
                 if (!this.keydown[71]) {
                     this.roles["3"].horizonDirection = "left";
                     this.move("3", 0);
                 }
             }
             if (this.keydown[71]) {
+                /**
+                 * key: G
+                 * keycode: 71
+                 * action: move right
+                 */
                 if (!this.keydown[68]) {
                     this.roles["3"].horizonDirection = "right";
                     this.move("3", 2);
@@ -217,6 +292,11 @@ export default class Main {
                 this.roles["3"].verticalTimer = true;
             }
             if (this.roles["3"].action === undefined && this.keycount[49] === 1) {
+                /**
+                 * key: 1
+                 * keycode: 49
+                 * action: attack
+                 */
                 this.roles["3"].action = "attack";
                 this.roles["3"].attackKeepTimer = 10;
                 switch (this.roles["3"].weapon) {
@@ -240,6 +320,11 @@ export default class Main {
                 this.keycount[49]++;
             }
             if (this.keydown[192]) {
+                /**
+                 * key: `
+                 * keycode: 192
+                 * action: defense
+                 */
                 if (this.roles["3"].action === undefined) {
                     this.roles["3"].action = "defense";
                 }
@@ -248,20 +333,30 @@ export default class Main {
             }
         }
         this.renderMap();
+        /**
+         * Control all roles
+         */
         for (const key in this.roles) {
             if (this.roles[key]) {
+                /** Check the role if dead */
                 this.roles[key].deadthController();
+                /** Control attack action keep time */
                 if (!this.roles[key].attackKeepTimer && this.roles[key].action === "attack") {
                     this.roles[key].action = undefined;
                 } else {
                     this.roles[key].attackKeepTimer--;
                 }
+                /** render the role */
                 this.roles[key].render();
+                /** Check attack range */
                 if (this.ifInAttackRange(key)) {
                     this.roles[key].renderRange();
                 }
             }
         }
+        /**
+         * Control all bullets
+         */
         for (const key in this.bullets) {
             if (this.bullets[key]) {
                 this.bullets[key].render();
@@ -274,14 +369,25 @@ export default class Main {
         requestAnimationFrame(() => this.update());
     }
 
+    /**
+     * Check if other roles in the attack range
+     * @param {string} id The role's id
+     * @returns {boolean} Judgement
+     */
     private ifInAttackRange(id: string): boolean {
         let judge: boolean = false;
+        /** Clear the role's attackId */
         this.roles[id].attackId = [];
+
         if (this.roles[id].horizonDirection === "left") {
+            /** While moving left */
             const nleft = this.roles[id].x - this.roles[id].attackRange;
             const nc = (nleft + Storage.sceneWidth) % Storage.sceneWidth;
             const nhead = this.roles[id].y;
             const nfoot = this.roles[id].y + this.roles[id].height;
+            /**
+             * Check if other players in the attack range
+             */
             for (let r = nhead; r < nfoot; r++) {
                 const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.fullyMap[nr][nc] > 1) {
@@ -299,10 +405,14 @@ export default class Main {
                 }
             }
         } else if (this.roles[id].horizonDirection === "right") {
+            /** While moving right */
             const nright = this.roles[id].x + this.roles[id].width - 1 + this.roles[id].attackRange;
             const nc = (nright + Storage.sceneWidth) % Storage.sceneWidth;
             const nhead = this.roles[id].y;
             const nfoot = this.roles[id].y + this.roles[id].height;
+            /**
+             * Check if other players in the attack range
+             */
             for (let r = nhead; r < nfoot; r++) {
                 const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.fullyMap[nr][nc] > 1) {
@@ -323,7 +433,11 @@ export default class Main {
         return judge;
     }
 
-    // move
+    /**
+     * Control the role moving
+     * @param {string} id The role's id
+     * @param {number} k Direction index of Storage.dx or Storage.dy
+     */
     private move(id: string, k: number) {
         const nx = this.roles[id].x;
         const ny = this.roles[id].y;
@@ -335,13 +449,22 @@ export default class Main {
         this.roles[id].x = (this.roles[id].x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
         this.roles[id].y = (this.roles[id].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
         let isCollide = true;
+        /**
+         * Correct the role's position
+         */
         while (isCollide) {
             isCollide = this.collisionJudge(this.roles[id], k);
         }
+        /** Remove the role's flag in the map */
         this.roles[id].removeFlag(nx, ny, k);
     }
 
-    // handle while hit
+    /**
+     * Check if colliding someone
+     * @param {object} obj Role or Bullet
+     * @param {number} k Direction index of Storage.dx or Storage.dy
+     * @returns {boolean} Judgement
+     */
     private collisionJudge(obj: {[key: string]: any}, k: number): boolean {
         if (Math.abs(Storage.dx[k])) {
             const nleft = (obj.x + Storage.sceneWidth) % Storage.sceneWidth;
@@ -349,24 +472,30 @@ export default class Main {
             for (let r = obj.y; r < obj.y + obj.height; r++) {
                 const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.dx[k] > 0) {
+                    /** While moving right */
                     if (obj.roleId) {
+                        /** The obj is a role */
                         if (Storage.fullyMap[nr][nright] && Storage.fullyMap[nr][nright] !== +obj.roleId) {
                             obj.x--;
                             return true;
                         }
                     } else if (obj.hostId) {
+                        /** The obj is a bullet */
                         if (Storage.fullyMap[nr][nright] && Storage.fullyMap[nr][nright] !== +obj.hostId) {
                             this.roles[Storage.fullyMap[nr][nright]].healthPoint -= this.roles[obj.hostId].attackPower;
                             return true;
                         }
                     }
                 } else {
+                    /** While moving left */
                     if (obj.roleId) {
+                        /** The obj is a role */
                         if (Storage.fullyMap[nr][nleft] && Storage.fullyMap[nr][nleft] !== +obj.roleId) {
                             obj.x++;
                             return true;
                         }
                     } else if (obj.hostId) {
+                        /** The obj is a bullet */
                         if (Storage.fullyMap[nr][nleft] && Storage.fullyMap[nr][nleft] !== +obj.hostId) {
                             this.roles[Storage.fullyMap[nr][nleft]].healthPoint -= this.roles[obj.hostId].attackPower;
                             return true;
@@ -381,7 +510,9 @@ export default class Main {
             for (let c = obj.x; c < obj.x + obj.width; c++) {
                 const nc = (c + Storage.sceneWidth) % Storage.sceneWidth;
                 if (obj.jumpSpeed &&  obj.jumpSpeed < 0) {
+                    /** While moving down */
                     if (obj.roleId) {
+                        /** The obj is a role */
                         if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== +obj.roleId) {
                             obj.y--;
                             obj.verticalTimer = false;
@@ -389,19 +520,23 @@ export default class Main {
                             return true;
                         }
                     } else if (obj.hostId) {
+                        /** The obj is a bullet */
                         if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== +obj.hostId) {
                             this.roles[Storage.fullyMap[nfoot][nc]].healthPoint -= this.roles[obj.hostId].attackPower;
                             return true;
                         }
                     }
                 } else {
+                    /** While moving up */
                     if (obj.roleId) {
+                        /** The obj is a role */
                         if (Storage.fullyMap[nhead][nc] && Storage.fullyMap[nhead][nc] !== +obj.roleId) {
                             obj.y++;
                             obj.jumpSpeed = 1;
                             return true;
                         }
                     } else if (obj.hostId) {
+                        /** The obj is a bullet */
                         if (Storage.fullyMap[nhead][nc] && Storage.fullyMap[nhead][nc] !== +obj.hostId) {
                             this.roles[Storage.fullyMap[nhead][nc]].healthPoint -= this.roles[obj.hostId].attackPower;
                             return true;

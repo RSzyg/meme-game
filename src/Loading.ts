@@ -20,7 +20,7 @@ window.onload = () => {
     const total: number = imgSrcArr.length;
     let current: number = 0;
     let name: string;
-    // init map
+    /** Init map */
     for (let r = 0; r < 600; r++) {
         Storage.fullyMap[r] = [];
         for (let c = 0; c < 800; c++) {
@@ -29,7 +29,7 @@ window.onload = () => {
             Storage.fullyMap[r][c] = Storage.simplifiedMap[i][j];
         }
     }
-    // load images
+    /** Load images */
     for (let i = 0; i < total; i++) {
         const path: string = imgSrcArr[i];
         name = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));

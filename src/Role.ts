@@ -1,10 +1,33 @@
 import Storage from "./Storage";
 
+/**
+ * Class Role
+ * This class include role's properties
+ * @prop {number} healthBarHeight
+ * @prop {number} healthBarWidth
+ * @prop {number} attackKeepTimer - Record attack keep time
+ * @prop {boolean} verticalTimer - Record vertical move time
+ * @prop {string} weapon - Record role's weapon type
+ * @prop {number} healthPoint - Role's HP
+ * @prop {number} maxHealthPoint - Role's max HP
+ * @prop {number} attackPower - Role's attack power
+ * @prop {number} attackRange - Role's attack range
+ * @prop {number} moveSpeed - Role's move speed
+ * @prop {number} initJumpSpeed - Role's initial jump speed
+ * @prop {number} jumpSpeed - Role's jump speed
+ * @prop {string[]} attackId - Other roles' id in this role's attack range
+ * @prop {string} horizonDirection - Role's move direction in horizon
+ * @prop {string} status - Role's move status(up, down, walk)
+ * @prop {string} action - Role's action status
+ * @prop {string} roleId - Role's id
+ * @prop {number} selfHeight - Role's height
+ * @prop {number} selfWidth - Role's width
+ * @prop {number} selfX - Role's x axis
+ * @prop {number} selfY - Role's y axis
+ */
 export default class Role {
     private static healthBarHeight: number = 8;
     private static healthBarWidth: number;
-    // keyboardRecorder
-    public keyboardRecorder: {[key: string]: number};
     // timer
     public attackKeepTimer: number;
     public verticalTimer: boolean;
@@ -19,7 +42,7 @@ export default class Role {
     public jumpSpeed: number;
     public attackId: string[];
     public horizonDirection: string; // left, right (default right)
-    public status: string; // up, down (default undefined)
+    public status: string; // up, down, walk(default walk)
     public action: string; // dead, attack (default undefined)
     // element properties
     private roleId: string;
@@ -28,10 +51,12 @@ export default class Role {
     private selfX: number;
     private selfY: number;
 
+    /**
+     * Create a role
+     * @param {object} data - Initial data of role
+     */
     constructor(data: { [key: string]: any }) {
         this.roleId = data.roleId;
-        // keyboardRecorder
-        this.keyboardRecorder = {};
         // timer
         this.attackKeepTimer = 0;
         this.verticalTimer = false;
@@ -53,35 +78,70 @@ export default class Role {
         this.attackId = [];
     }
 
-    // element properties setter & getter
+    /**
+     * Get x axis
+     * @returns {number}
+     */
     public get x(): number {
         return this.selfX;
     }
+    /**
+     * Set x axis
+     * @param {number} x
+     */
     public set x(x: number) {
         this.selfX = x;
     }
 
+    /**
+     * Get y axis
+     * @returns {number}
+     */
     public get y(): number {
         return this.selfY;
     }
+    /**
+     * Set y axis
+     * @param {number} y
+     */
     public set y(y: number) {
         this.selfY = y;
     }
 
+    /**
+     * Get role's height
+     * @returns {number}
+     */
     public get height(): number {
         return this.selfHeight;
     }
+    /**
+     * Set role's height
+     * @param {number} height
+     */
     public set height(height: number) {
         this.selfHeight = height;
     }
 
+    /**
+     * Get role's width
+     * @returns {number} width
+     */
     public get width(): number {
         return this.selfWidth;
     }
+    /**
+     * Set role's width
+     * @param {number} width
+     */
     public set width(width: number) {
         this.selfWidth = width;
     }
 
+    /**
+     * Get prior status of role
+     * @returns {string}
+     */
     public get priStatus(): string {
         if (this.action) {
             return this.action;
@@ -90,7 +150,9 @@ export default class Role {
         }
     }
 
-    // handle while dead
+    /**
+     * Control the role's deadth
+     */
     public deadthController() {
         if (this.healthPoint < 0) {
             this.healthPoint = 0;
@@ -98,14 +160,21 @@ export default class Role {
         }
     }
 
-    // rendering
+    /**
+     * Rendering about role
+     */
     public render() {
         this.renderRole();
         this.renderHealthBar();
         this.renderMiniRole();
     }
 
-    // remove
+    /**
+     * Remove the flag of the role in the map
+     * @param {number} x - Old x axis
+     * @param {number} y - Old y axis
+     * @param {number} k - Direction index of Storage.dx or Storage.dy
+     */
     public removeFlag(x: number, y: number, k: number) {
         for (let r = this.y; r < this.y + this.height; r++) {
             const nr = (r + Storage.sceneHeight) % Storage.sceneHeight;
@@ -167,7 +236,9 @@ export default class Role {
         }
     }
 
-    // render the range of attack
+    /**
+     * Rendering the attack range
+     */
     public renderRange() {
         if (this.horizonDirection === "left") {
             Storage.bar.ctx.fillStyle = "rgba(102, 204, 255, 0.6)";
@@ -188,6 +259,9 @@ export default class Role {
         }
     }
 
+    /**
+     * Rendering the role
+     */
     private renderRole() {
         let name: string = this.priStatus + "-" + this.horizonDirection;
         if (this.priStatus === "dead") {
@@ -202,6 +276,9 @@ export default class Role {
         );
     }
 
+    /**
+     * Rendering the health bar of the role
+     */
     private renderHealthBar() {
         const index: number = Math.floor((this.healthPoint + 0.2 * this.maxHealthPoint) / (0.4 * this.maxHealthPoint));
         Storage.bar.ctx.strokeStyle = "#000000";
@@ -220,6 +297,9 @@ export default class Role {
         );
     }
 
+    /**
+     * Rendering the mini-role
+     */
     private renderMiniRole() {
         let ctx: CanvasRenderingContext2D;
         let color: string;

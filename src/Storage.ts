@@ -1,5 +1,20 @@
 import Canvas from "./Canvas";
 
+/**
+ * @prop {number} sceneHeight
+ * @prop {number} sceneWidth
+ * @prop {object} images
+ * @prop {Canvas} bar
+ * @prop {Canvas} miniMap
+ * @prop {Canvas} miniSelfRole
+ * @prop {Canvas} miniOtherRole
+ * @prop {Canvas} main
+ * @prop {string[]} healthBarColor
+ * @prop {number[]} dx
+ * @prop {number[]} dy
+ * @prop {number[]} simplifiedMap
+ * @prop {number[]} fullyMap
+ */
 export default class Storage {
     public static sceneHeight: number = 600;
     public static sceneWidth: number = 800;
