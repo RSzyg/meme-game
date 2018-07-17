@@ -1,5 +1,6 @@
 .vscode
 dist/
 meme-game-linux-x64/
+meme-game-mas-x64/
 node_modules/
 npm-debug.log

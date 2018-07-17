@@ -8,7 +8,7 @@
     "build": "webpack --mode development",
     "watch": "webpack --watch --mode development",
     "electron": "electron .",
-    "packager": "webpack && electron-packager . --platform=linux --electron-version=2.0.5  --overwrite"
+    "packager": "webpack && electron-packager . --platform=mas --electron-version=2.0.5  --overwrite"
   },
   "repository": {
     "type": "git",
