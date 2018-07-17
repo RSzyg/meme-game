@@ -171,7 +171,7 @@ export default class Main {
                  */
                 if (!this.keydown[39]) {
                     this.roles["2"].horizonDirection = "left";
-                    this.moveController("2", 0);
+                    this.move("2", 0);
                 }
             }
             if (this.keydown[39]) {
@@ -182,16 +182,16 @@ export default class Main {
                  */
                 if (!this.keydown[37]) {
                     this.roles["2"].horizonDirection = "right";
-                    this.moveController("2", 2);
+                    this.move("2", 2);
                 }
             }
             if (this.roles["2"].verticalTimer) {
                 if (this.roles["2"].jumpSpeed > 0) {
                     this.roles["2"].status = "up";
-                    this.moveController("2", 1);
+                    this.move("2", 1);
                 } else {
                     this.roles["2"].status = "down";
-                    this.moveController("2", 3);
+                    this.move("2", 3);
                 }
                 this.roles["2"].jumpSpeed--;
             } else {
@@ -263,7 +263,7 @@ export default class Main {
                  */
                 if (!this.keydown[71]) {
                     this.roles["3"].horizonDirection = "left";
-                    this.moveController("3", 0);
+                    this.move("3", 0);
                 }
             }
             if (this.keydown[71]) {
@@ -274,16 +274,16 @@ export default class Main {
                  */
                 if (!this.keydown[68]) {
                     this.roles["3"].horizonDirection = "right";
-                    this.moveController("3", 2);
+                    this.move("3", 2);
                 }
             }
             if (this.roles["3"].verticalTimer) {
                 if (this.roles["3"].jumpSpeed > 0) {
                     this.roles["3"].status = "up";
-                    this.moveController("3", 1);
+                    this.move("3", 1);
                 } else {
                     this.roles["3"].status = "down";
-                    this.moveController("3", 3);
+                    this.move("3", 3);
                 }
                 this.roles["3"].jumpSpeed--;
             } else {
@@ -437,10 +437,16 @@ export default class Main {
      * @param {string} id The role's id
      * @param {number} k Direction index of Storage.dx or Storage.dy
      */
-    private moveController(id: string, k: number) {
-        this.roles[id].move(k);
+    private move(id: string, k: number) {
         const nx = this.roles[id].x;
         const ny = this.roles[id].y;
+        const nk = (k === 3) ? 1 : k;
+        this.roles[id].y += Storage.dy[nk] * this.roles[id].jumpSpeed;
+        this.roles[id].x += Storage.dx[nk] * this.roles[id].moveSpeed;
+        const midWidth = this.roles[id].width / 2;
+        const midHeight = this.roles[id].height / 2;
+        this.roles[id].x = (this.roles[id].x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
+        this.roles[id].y = (this.roles[id].y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
         let isCollide = true;
         /**
          * Correct the role's position

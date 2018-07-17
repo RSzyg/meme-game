@@ -151,22 +151,6 @@ export default class Role {
     }
 
     /**
-     * Control the role moving
-     * @param {number} k Direction index of Storage.dx or Storage.dy
-     */
-    public move(k: number) {
-        const nx = this.x;
-        const ny = this.y;
-        const nk = (k === 3) ? 1 : k;
-        this.y += Storage.dy[nk] * this.jumpSpeed;
-        this.x += Storage.dx[nk] * this.moveSpeed;
-        const midWidth = this.width / 2;
-        const midHeight = this.height / 2;
-        this.x = (this.x + midWidth + Storage.sceneWidth) % Storage.sceneWidth - midWidth;
-        this.y = (this.y + midHeight + Storage.sceneHeight) % Storage.sceneHeight - midHeight;
-    }
-
-    /**
      * Control the role's deadth
      */
     public deadthController() {
