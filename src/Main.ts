@@ -90,7 +90,7 @@ export default class Main {
 
     /**
      * Create a role
-     * @param {string} id The role's id 
+     * @param {string} id The role's id
      */
     private createRole(id: string) {
         /**
@@ -144,7 +144,6 @@ export default class Main {
      * Update the scene 60fps
      * 40 ↓
      * 70 F
-     * 
      */
     private update() {
         this.clearScene();
