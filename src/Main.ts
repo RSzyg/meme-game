@@ -30,6 +30,9 @@ export default class Main {
         this.bulletId = 0;
     }
 
+    public get Role(): {[key: string]: Role} {
+        return this.roles;
+    }
     /**
      * Create a scene
      * The entry method
@@ -55,7 +58,17 @@ export default class Main {
         document.addEventListener("keydown", (e) => this.keyboardController(e));
         document.addEventListener("keyup", (e) => this.keyboardController(e));
     }
-
+    public aiKeyboardController(type: string, keyCode: number) {
+        if (type === "keydown") {
+            this.keydown[keyCode] = true;
+            if (!this.keycount[keyCode]) {
+                this.keycount[keyCode] = 1;
+            }
+        } else if (type === "keyup") {
+            this.keydown[keyCode] = false;
+            this.keycount[keyCode] = 0;
+        }
+    }
     /**
      * Render the map
      */

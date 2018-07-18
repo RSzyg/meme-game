@@ -1,8 +1,10 @@
+import AI from "./AI";
 import Main from "./Main";
 import Storage from "./Storage";
 
 window.onload = () => {
     const main: Main = new Main();
+    const ai: AI = new AI(main, "2");
     const imgSrcArr: string[] = [
         "./resource/up-left.png",
         "./resource/up-right.png",
@@ -41,6 +43,8 @@ window.onload = () => {
             current++;
             if (current === total) {
                 main.createScene();
+                setTimeout(() => ai.run(), 2000);
+                // ai.run();
             }
         };
     }
