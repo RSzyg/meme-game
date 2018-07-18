@@ -4,6 +4,8 @@ import Storage from "./Storage";
  * @prop {number} direction
  * @prop {numebr} speed
  * @prop {string} hostId
+ * @prop {number} startX
+ * @prop {number} maxDistance
  * @prop {number} selfX
  * @prop {number} selfY
  * @prop {number} selfWidth
@@ -13,6 +15,8 @@ export default class Bullet {
     public direction: number; // left, up, right, down
     public speed: number;
     public hostId: string;
+    public startX: number;
+    public maxDistance: number;
     private selfX: number;
     private selfY: number;
     private selfWidth: number = 20;
@@ -25,8 +29,16 @@ export default class Bullet {
      * @param {string} hostId - The id of the role that the bullet belongs to
      * @param {string} direction - The bullet's direction
      */
-    constructor(x: number, y: number, speed: number, hostId: string, direction: string) {
-        this.selfX = x;
+    constructor(
+        x: number,
+        y: number,
+        speed: number,
+        maxDistance: number,
+        hostId: string,
+        direction: string,
+    ) {
+        this.maxDistance = maxDistance;
+        this.selfX = this.startX = x;
         this.selfY = y;
         this.speed = speed;
         this.hostId = hostId;

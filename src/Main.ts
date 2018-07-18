@@ -211,6 +211,7 @@ export default class Main {
                         this.bullets[this.bulletId++] = new Bullet(
                             this.roles["2"].x + 20,
                             this.roles["2"].y + this.roles["2"].height / 2,
+                            300,
                             6,
                             "2",
                             this.roles["2"].horizonDirection,
@@ -304,6 +305,7 @@ export default class Main {
                             this.roles["3"].x + 20,
                             this.roles["3"].y + this.roles["3"].height / 2,
                             6,
+                            300,
                             "3",
                             this.roles["3"].horizonDirection,
                         );
@@ -362,6 +364,11 @@ export default class Main {
                 this.bullets[key].move();
                 if (this.collisionJudge(this.bullets[key], this.bullets[key].direction)) {
                     delete this.bullets[key];
+                }
+                if (this.bullets[key]) {
+                    if (this.ifOverDistance(key)) {
+                        delete this.bullets[key];
+                    }
                 }
             }
         }
@@ -456,6 +463,28 @@ export default class Main {
         }
         /** Remove the role's flag in the map */
         this.roles[id].removeFlag(nx, ny, k);
+    }
+
+    /**
+     * Check if the bullet over distance
+     * @param {string} key The key of the bullet
+     * @returns {boolean} Judgement
+     */
+    private ifOverDistance(key: string): boolean {
+        if (this.bullets[key]) {
+            let dis: number;
+            if (Storage.dx[this.bullets[key].direction] === 1) {
+                dis = this.bullets[key].x - this.bullets[key].startX + Storage.sceneWidth;
+                dis %= Storage.sceneWidth;
+            } else {
+                dis = this.bullets[key].startX - this.bullets[key].x + Storage.sceneWidth;
+                dis %= Storage.sceneWidth;
+            }
+            if (dis > this.bullets[key].maxDistance) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
