@@ -479,9 +479,12 @@ export default class Main {
                             return true;
                         }
                     } else if (obj.hostId) {
+                        const id: number = Storage.fullyMap[nr][nright];
                         /** The obj is a bullet */
-                        if (Storage.fullyMap[nr][nright] && Storage.fullyMap[nr][nright] !== +obj.hostId) {
-                            this.roles[Storage.fullyMap[nr][nright]].healthPoint -= this.roles[obj.hostId].attackPower;
+                        if (id && id !== +obj.hostId) {
+                            if (id !== 1) {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            }
                             return true;
                         }
                     }
@@ -494,9 +497,12 @@ export default class Main {
                             return true;
                         }
                     } else if (obj.hostId) {
+                        const id: number = Storage.fullyMap[nr][nleft];
                         /** The obj is a bullet */
-                        if (Storage.fullyMap[nr][nleft] && Storage.fullyMap[nr][nleft] !== +obj.hostId) {
-                            this.roles[Storage.fullyMap[nr][nleft]].healthPoint -= this.roles[obj.hostId].attackPower;
+                        if (id && id !== +obj.hostId) {
+                            if (id !== 1) {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            }
                             return true;
                         }
                     }
@@ -519,9 +525,12 @@ export default class Main {
                             return true;
                         }
                     } else if (obj.hostId) {
+                        const id: number = Storage.fullyMap[nfoot][nc];
                         /** The obj is a bullet */
-                        if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== +obj.hostId) {
-                            this.roles[Storage.fullyMap[nfoot][nc]].healthPoint -= this.roles[obj.hostId].attackPower;
+                        if (id && id !== +obj.hostId) {
+                            if (id !== 1) {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            }
                             return true;
                         }
                     }
@@ -535,9 +544,12 @@ export default class Main {
                             return true;
                         }
                     } else if (obj.hostId) {
+                        const id: number = Storage.fullyMap[nhead][nc];
                         /** The obj is a bullet */
-                        if (Storage.fullyMap[nhead][nc] && Storage.fullyMap[nhead][nc] !== +obj.hostId) {
-                            this.roles[Storage.fullyMap[nhead][nc]].healthPoint -= this.roles[obj.hostId].attackPower;
+                        if (id && id !== +obj.hostId) {
+                            if (id !== 1) {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            }
                             return true;
                         }
                     }
