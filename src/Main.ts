@@ -224,6 +224,7 @@ export default class Main {
                         this.bullets[this.bulletId++] = new Bullet(
                             this.roles["2"].x + 20,
                             this.roles["2"].y + this.roles["2"].height / 2,
+                            300,
                             6,
                             "2",
                             this.roles["2"].horizonDirection,
@@ -317,6 +318,7 @@ export default class Main {
                             this.roles["3"].x + 20,
                             this.roles["3"].y + this.roles["3"].height / 2,
                             6,
+                            300,
                             "3",
                             this.roles["3"].horizonDirection,
                         );
@@ -375,6 +377,11 @@ export default class Main {
                 this.bullets[key].move();
                 if (this.collisionJudge(this.bullets[key], this.bullets[key].direction)) {
                     delete this.bullets[key];
+                }
+                if (this.bullets[key]) {
+                    if (this.ifOverDistance(key)) {
+                        delete this.bullets[key];
+                    }
                 }
             }
         }
@@ -472,6 +479,28 @@ export default class Main {
     }
 
     /**
+     * Check if the bullet over distance
+     * @param {string} key The key of the bullet
+     * @returns {boolean} Judgement
+     */
+    private ifOverDistance(key: string): boolean {
+        if (this.bullets[key]) {
+            let dis: number;
+            if (Storage.dx[this.bullets[key].direction] === 1) {
+                dis = this.bullets[key].x - this.bullets[key].startX + Storage.sceneWidth;
+                dis %= Storage.sceneWidth;
+            } else {
+                dis = this.bullets[key].startX - this.bullets[key].x + Storage.sceneWidth;
+                dis %= Storage.sceneWidth;
+            }
+            if (dis > this.bullets[key].maxDistance) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Check if colliding someone
      * @param {object} obj Role or Bullet
      * @param {number} k Direction index of Storage.dx or Storage.dy
@@ -492,9 +521,12 @@ export default class Main {
                             return true;
                         }
                     } else if (obj.hostId) {
+                        const id: number = Storage.fullyMap[nr][nright];
                         /** The obj is a bullet */
-                        if (Storage.fullyMap[nr][nright] && Storage.fullyMap[nr][nright] !== +obj.hostId) {
-                            this.roles[Storage.fullyMap[nr][nright]].healthPoint -= this.roles[obj.hostId].attackPower;
+                        if (id && id !== +obj.hostId) {
+                            if (id !== 1) {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            }
                             return true;
                         }
                     }
@@ -507,9 +539,12 @@ export default class Main {
                             return true;
                         }
                     } else if (obj.hostId) {
+                        const id: number = Storage.fullyMap[nr][nleft];
                         /** The obj is a bullet */
-                        if (Storage.fullyMap[nr][nleft] && Storage.fullyMap[nr][nleft] !== +obj.hostId) {
-                            this.roles[Storage.fullyMap[nr][nleft]].healthPoint -= this.roles[obj.hostId].attackPower;
+                        if (id && id !== +obj.hostId) {
+                            if (id !== 1) {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            }
                             return true;
                         }
                     }
@@ -532,9 +567,12 @@ export default class Main {
                             return true;
                         }
                     } else if (obj.hostId) {
+                        const id: number = Storage.fullyMap[nfoot][nc];
                         /** The obj is a bullet */
-                        if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== +obj.hostId) {
-                            this.roles[Storage.fullyMap[nfoot][nc]].healthPoint -= this.roles[obj.hostId].attackPower;
+                        if (id && id !== +obj.hostId) {
+                            if (id !== 1) {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            }
                             return true;
                         }
                     }
@@ -548,9 +586,12 @@ export default class Main {
                             return true;
                         }
                     } else if (obj.hostId) {
+                        const id: number = Storage.fullyMap[nhead][nc];
                         /** The obj is a bullet */
-                        if (Storage.fullyMap[nhead][nc] && Storage.fullyMap[nhead][nc] !== +obj.hostId) {
-                            this.roles[Storage.fullyMap[nhead][nc]].healthPoint -= this.roles[obj.hostId].attackPower;
+                        if (id && id !== +obj.hostId) {
+                            if (id !== 1) {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            }
                             return true;
                         }
                     }
