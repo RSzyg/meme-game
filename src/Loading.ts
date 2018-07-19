@@ -42,7 +42,7 @@ window.onload = () => {
             current++;
             if (current === total) {
                 main.createScene();
-                const ai: AI = new AI(main, "3");
+                const ai: AI = new AI(main, "2");
                 setTimeout(() => ai.run(), 2000);
                 // ai.run();
             }

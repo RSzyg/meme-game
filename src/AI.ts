@@ -13,7 +13,7 @@ export default class AI {
     private main: Main;
     private route: number[]; // 1 for up, 2 for down, 3 for right, 4 for left and 0 for adjust position
     private roleId: string;
-    private keyMap: {[key: string]: {[key: string]: number}};
+    private keyMap: {[key: string]: {[key: string]: string}};
     private comPos: Position;
     private pleyerPos: Position;
     private timeout: number[];
@@ -34,18 +34,18 @@ export default class AI {
         this.timeout = [];
         this.keyMap = {
             2: {
-                up: 38,
-                right: 37,
-                left: 39,
-                attack: 191,
-                defense: 190,
+                up: "ArrowUp",
+                right: "ArrowRight",
+                left: "ArrowLeft",
+                attack: "KeyZ",
+                defense: "KeyX",
             },
             3: {
-                up: 82,
-                right: 71,
-                left: 68,
-                attack: 49,
-                defense: 192,
+                up: "Jump",
+                right: "MoveRight",
+                left: "MoveLeft",
+                attack: "Attack",
+                defense: "Defense",
             },
         };
     }
@@ -65,8 +65,8 @@ export default class AI {
         this.clearSetTimeOut();
         this.search ();
         this.helpMove(0, 0);
-        this.main.aiKeyboardController("keydown", this.keyMap[this.roleId].attack);
-        setTimeout(() => this.main.aiKeyboardController("keyup", this.keyMap[this.roleId].attack), 1);
+        this.simulateKeyboardEvent("keydown", this.keyMap[this.roleId].attack);
+        setTimeout(() => this.simulateKeyboardEvent("keyup", this.keyMap[this.roleId].attack), 1);
         setTimeout(() => this.run(), 1000);
     }
     private helpMove(idx: number, time: number) {
@@ -180,28 +180,39 @@ export default class AI {
     private dfs(startX: number, startY: number, targetX: number, targetY: number) {
         // to do
     }
-    private move(len: number, dir: number): number {
+    private move(len: number, dir: string): number {
         this.makeMove(len, dir);
         return this.getMoveTime(len);
     }
     private getMoveTime(len: number): number {
         return len * 25 / 6 + 1;
     }
-    private makeMove(len: number, dir: number, now: number = 0) {
+    private makeMove(len: number, dir: string, now: number = 0) {
         if (dir === this.keyMap[this.roleId].up) {
-            this.main.aiKeyboardController("keydown", dir);
+            this.simulateKeyboardEvent("keydown", dir);
             setTimeout(() => {
-                this.main.aiKeyboardController("keyup", dir);
+                this.simulateKeyboardEvent("keyup", dir);
             }, 5);
             return;
         }
         if (now >= len) {
             return;
         }
-        this.main.aiKeyboardController("keydown", dir);
+        this.simulateKeyboardEvent("keydown", dir);
         requestAnimationFrame(() => {
-            this.main.aiKeyboardController("keyup", dir);
+            this.simulateKeyboardEvent("keyup", dir);
             this.makeMove(len, dir, now + 4);
         });
+    }
+    private simulateKeyboardEvent(type: string, code: string) {
+        const event: KeyboardEvent = new KeyboardEvent(
+            type,
+            {
+                bubbles: true,
+                key: code,
+                code,
+            },
+        );
+        document.body.dispatchEvent(event);
     }
 }
