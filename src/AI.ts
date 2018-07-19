@@ -62,30 +62,12 @@ export default class AI {
      * 191 / attack 2
      */
     public run() {
-        // let time = 0;
-        // this.comPos.setPos(this.computer.x, this.computer.y);
         this.clearSetTimeOut();
         this.search ();
         this.helpMove(0, 0);
-        // console.log(this.comPos.BlockX, this.comPos.PixelX);
-        // console.log(this.route);
-        // for (const dir of this.route) {
-        //     console.log(dir);
-        // }
-        // time += this.move(40, this.keyMap[this.roleId].right);
-        // this.main.aiKeyboardController("keydown", this.keyMap[this.roleId].right);
-        // setTimeout(() => this.main.aiKeyboardController("keyup", this.keyMap[this.roleId].right), 1000 / 6);
-        // console.log(this.route);
-        // to do
         this.main.aiKeyboardController("keydown", this.keyMap[this.roleId].attack);
         setTimeout(() => this.main.aiKeyboardController("keyup", this.keyMap[this.roleId].attack), 1);
         setTimeout(() => this.run(), 1000);
-        // this.main.aiKeyboardController("keydown", 38);
-        // for (const dir of this.route) {
-        //     switch (dir) {
-        //         // case 1:
-        //     }
-        // }
     }
     private helpMove(idx: number, time: number) {
         if (idx === this.route.length) {
