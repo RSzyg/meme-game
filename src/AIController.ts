@@ -12,22 +12,10 @@ export default class AIController {
     private keyTimer: {[key: string]: number};
     constructor(roles: {[key: string]: Role}) {
         this.roles = roles;
-        this.commandList = [
-            {
-                code: "MoveRight",
-                frames: 20,
-            },
-            {
-                code: "Jump",
-                frames: 20,
-            },
-            {
-                code: "MoveRight",
-                frames: 1000,
-            },
-        ];
+        this.commandList = [];
         this.keyTimer = {};
     }
+
     public start() {
         this.main();
         // this.moveController(2, 100);
@@ -35,6 +23,7 @@ export default class AIController {
     }
 
     private main() {
+        this.followHim();
         while (this.commandList.length) {
             let command: {[key: string]: any};
             command = this.commandList.shift();
@@ -44,6 +33,31 @@ export default class AIController {
             this.moveController(command.code, command.frames);
         }
         requestAnimationFrame(() => this.main());
+    }
+
+    private followHim() {
+        // horizon
+        let rightDis: number;
+        let leftDis: number;
+        if (this.roles["2"].x > this.roles["3"].x) {
+            rightDis = this.roles["2"].x - this.roles["3"].x;
+            leftDis = (Storage.sceneWidth - rightDis) % Storage.sceneWidth;
+        } else {
+            leftDis = this.roles["3"].x - this.roles["2"].x;
+            rightDis = (Storage.sceneWidth - leftDis) % Storage.sceneWidth;
+        }
+
+        if (leftDis < rightDis) {
+            this.commandList.push({
+                code: "MoveLeft",
+                frames: Math.floor(leftDis / 4),
+            });
+        } else {
+            this.commandList.push({
+                code: "MoveRight",
+                frames: Math.floor(rightDis / 4),
+            });
+        }
     }
 
     private simulateKeyboardEvent(type: string, code: string) {
