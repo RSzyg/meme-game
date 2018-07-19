@@ -1,3 +1,4 @@
+import AIController from "./AIController";
 import Bullet from "./Bullet";
 import Canvas from "./Canvas";
 import Role from "./Role";
@@ -6,6 +7,7 @@ import Storage from "./Storage";
 /**
  * Class Main
  * The main part of the game. Including scene and roles interaction.
+ * @prop {AIController} magicAI - An AI Controller
  * @prop {object} roles - All roles in the scene
  * @prop {object} bullets - All bullets in the scene
  * @prop {object} keydown - Record the key down
@@ -13,10 +15,11 @@ import Storage from "./Storage";
  * @prop {number} bulletId - The auto increment id of bullet
  */
 export default class Main {
+    private magicAI: AIController;
     private roles: {[key: string]: Role};
     private bullets: {[key: string]: Bullet};
-    private keydown: {[key: number]: boolean};
-    private keycount: {[key: number]: number};
+    private keydown: {[key: string]: boolean};
+    private keycount: {[key: string]: number};
     private bulletId: number;
 
     /**
@@ -38,6 +41,9 @@ export default class Main {
      * The entry method
      */
     public createScene() {
+        document.addEventListener("keydown", (e) => this.keyboardController(e));
+        document.addEventListener("keyup", (e) => this.keyboardController(e));
+
         /** Create mini-self-role canvas */
         Storage.miniSelfRole = new Canvas("4", 150, 200, "upperRight");
         /** Create mini-other-role canvas */
@@ -50,13 +56,15 @@ export default class Main {
         Storage.main = new Canvas("1", Storage.sceneHeight, Storage.sceneWidth, null);
 
         this.renderMap();
+
         this.createRole("2");
         this.createRole("3");
+
+        this.magicAI = new AIController(this.roles);
         this.renderMiniMap();
         this.update();
 
-        document.addEventListener("keydown", (e) => this.keyboardController(e));
-        document.addEventListener("keyup", (e) => this.keyboardController(e));
+        this.magicAI.start();
     }
     public aiKeyboardController(type: string, keyCode: number) {
         if (type === "keydown") {
@@ -131,13 +139,13 @@ export default class Main {
      */
     private keyboardController(e: KeyboardEvent) {
         if (e.type === "keydown") {
-            this.keydown[e.keyCode] = true;
-            if (!this.keycount[e.keyCode]) {
-                this.keycount[e.keyCode] = 1;
+            this.keydown[e.code] = true;
+            if (!this.keycount[e.code]) {
+                this.keycount[e.code] = 1;
             }
         } else if (e.type === "keyup") {
-            this.keydown[e.keyCode] = false;
-            this.keycount[e.keyCode] = 0;
+            this.keydown[e.code] = false;
+            this.keycount[e.code] = 0;
         }
     }
 
@@ -155,20 +163,33 @@ export default class Main {
 
     /**
      * Update the scene 60fps
-     * 40 ↓
-     * 70 F
+     * ------------------------------------
+     * Player1
+     * code: ArrowUp - Jump
+     * code: ArrowLeft - Move left
+     * code: ArrowRight - Move right
+     * code: KeyZ - Attack
+     * code: KeyX - Defense
+     * ------------------------------------
+     * Player2(AI?)
+     * code: Jump - Jump
+     * code: MoveLeft - Move left
+     * code: MoveRight - Move right
+     * code: Attack - Attack
+     * code: Defense - Defense
      */
     private update() {
+        this.magicAI.roles = this.roles;
         this.clearScene();
         /**
          * Player1
          * id: "2"
          */
         if (this.roles["2"].action !== "dead") {
-            if (this.keydown[38]) {
+            if (this.keydown.ArrowUp) {
                 /**
                  * key: ↑
-                 * keycode: 38
+                 * code: ArrowUp
                  * action: jump
                  */
                 if (!this.roles["2"].verticalTimer) {
@@ -176,24 +197,24 @@ export default class Main {
                     this.roles["2"].verticalTimer = true;
                 }
             }
-            if (this.keydown[37]) {
+            if (this.keydown.ArrowLeft) {
                 /**
                  * key: ←
-                 * keycode: 37
+                 * code: ArrowLeft
                  * action: move left
                  */
-                if (!this.keydown[39]) {
+                if (!this.keydown.ArrowRight) {
                     this.roles["2"].horizonDirection = "left";
                     this.move("2", 0);
                 }
             }
-            if (this.keydown[39]) {
+            if (this.keydown.ArrowRight) {
                 /**
                  * key: →
-                 * keycode: 39
+                 * code: ArrowRight
                  * action: move right
                  */
-                if (!this.keydown[37]) {
+                if (!this.keydown.ArrowLeft) {
                     this.roles["2"].horizonDirection = "right";
                     this.move("2", 2);
                 }
@@ -211,10 +232,10 @@ export default class Main {
                 this.roles["2"].jumpSpeed = -1;
                 this.roles["2"].verticalTimer = true;
             }
-            if (this.roles["2"].action === undefined && this.keycount[191] === 1) {
+            if (this.roles["2"].action === undefined && this.keycount.KeyZ === 1) {
                 /**
-                 * key: /
-                 * keycode: 191
+                 * key: z
+                 * code: KeyZ
                  * action: attack
                  */
                 this.roles["2"].action = "attack";
@@ -238,12 +259,12 @@ export default class Main {
                         }
                         break;
                 }
-                this.keycount[191]++;
+                this.keycount.KeyZ++;
             }
-            if (this.keydown[190]) {
+            if (this.keydown.KeyX) {
                 /**
-                 * key: .
-                 * keycode: 190
+                 * key: x
+                 * code: KeyX
                  * action: defense
                  */
                 if (this.roles["2"].action === undefined) {
@@ -258,10 +279,10 @@ export default class Main {
          * id: "3"
          */
         if (this.roles["3"].action !== "dead") {
-            if (this.keydown[82]) {
+            if (this.keydown.Jump) {
                 /**
-                 * key: R
-                 * keycode: 82
+                 * key: undefined
+                 * code: Jump
                  * action: jump
                  */
                 if (!this.roles["3"].verticalTimer) {
@@ -269,24 +290,24 @@ export default class Main {
                     this.roles["3"].verticalTimer = true;
                 }
             }
-            if (this.keydown[68]) {
+            if (this.keydown.MoveLeft) {
                 /**
-                 * key: D
-                 * keycode: 68
+                 * key: undefined
+                 * code: MoveLeft
                  * action: move left
                  */
-                if (!this.keydown[71]) {
+                if (!this.keydown.MoveRight) {
                     this.roles["3"].horizonDirection = "left";
                     this.move("3", 0);
                 }
             }
-            if (this.keydown[71]) {
+            if (this.keydown.MoveRight) {
                 /**
-                 * key: G
-                 * keycode: 71
+                 * key: undefined
+                 * code: MoveRight
                  * action: move right
                  */
-                if (!this.keydown[68]) {
+                if (!this.keydown.MoveLeft) {
                     this.roles["3"].horizonDirection = "right";
                     this.move("3", 2);
                 }
@@ -304,10 +325,10 @@ export default class Main {
                 this.roles["3"].jumpSpeed = -1;
                 this.roles["3"].verticalTimer = true;
             }
-            if (this.roles["3"].action === undefined && this.keycount[49] === 1) {
+            if (this.roles["3"].action === undefined && this.keycount.Attack === 1) {
                 /**
-                 * key: 1
-                 * keycode: 49
+                 * key: undefined
+                 * code: Attack
                  * action: attack
                  */
                 this.roles["3"].action = "attack";
@@ -331,12 +352,12 @@ export default class Main {
                         }
                         break;
                 }
-                this.keycount[49]++;
+                this.keycount.Attack++;
             }
-            if (this.keydown[192]) {
+            if (this.keydown.Defense) {
                 /**
-                 * key: `
-                 * keycode: 192
+                 * key: undefined
+                 * code: Defense
                  * action: defense
                  */
                 if (this.roles["3"].action === undefined) {
