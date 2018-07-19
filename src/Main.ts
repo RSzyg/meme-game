@@ -121,7 +121,7 @@ export default class Main {
             roleId: id,
             width: 54,
             height: 54,
-            x: (+id - 2) * 100,
+            x: (+id - 2) * 600,
             y: Storage.sceneHeight - 54,
             maxHealthPoint: 100,
             attackPower: 3,
@@ -179,7 +179,6 @@ export default class Main {
      * code: Defense - Defense
      */
     private update() {
-        this.magicAI.roles = this.roles;
         this.clearScene();
         /**
          * Player1
