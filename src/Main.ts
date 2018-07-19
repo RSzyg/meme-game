@@ -1,3 +1,4 @@
+import AIController from "./AIController";
 import Bullet from "./Bullet";
 import Canvas from "./Canvas";
 import Role from "./Role";
@@ -6,6 +7,7 @@ import Storage from "./Storage";
 /**
  * Class Main
  * The main part of the game. Including scene and roles interaction.
+ * @prop {AIController} magicAI - An AI Controller
  * @prop {object} roles - All roles in the scene
  * @prop {object} bullets - All bullets in the scene
  * @prop {object} keydown - Record the key down
@@ -13,6 +15,7 @@ import Storage from "./Storage";
  * @prop {number} bulletId - The auto increment id of bullet
  */
 export default class Main {
+    private magicAI: AIController;
     private roles: {[key: string]: Role};
     private bullets: {[key: string]: Bullet};
     private keydown: {[key: string]: boolean};
@@ -35,6 +38,9 @@ export default class Main {
      * The entry method
      */
     public createScene() {
+        document.addEventListener("keydown", (e) => this.keyboardController(e));
+        document.addEventListener("keyup", (e) => this.keyboardController(e));
+
         /** Create mini-self-role canvas */
         Storage.miniSelfRole = new Canvas("4", 150, 200, "upperRight");
         /** Create mini-other-role canvas */
@@ -47,13 +53,15 @@ export default class Main {
         Storage.main = new Canvas("1", Storage.sceneHeight, Storage.sceneWidth, null);
 
         this.renderMap();
+
         this.createRole("2");
         this.createRole("3");
+
+        this.magicAI = new AIController(this.roles);
         this.renderMiniMap();
         this.update();
 
-        document.addEventListener("keydown", (e) => this.keyboardController(e));
-        document.addEventListener("keyup", (e) => this.keyboardController(e));
+        this.magicAI.start();
     }
 
     /**
@@ -158,6 +166,7 @@ export default class Main {
      * code: Defense - Defense
      */
     private update() {
+        this.magicAI.roles = this.roles;
         this.clearScene();
         /**
          * Player1
