@@ -30,8 +30,8 @@ export default class Main {
         this.bulletId = 0;
     }
 
-    public get Role(): {[key: string]: Role} {
-        return this.roles;
+    public Role(roleId: string): Role {
+        return this.roles[roleId];
     }
     /**
      * Create a scene
