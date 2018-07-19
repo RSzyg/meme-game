@@ -1,5 +1,6 @@
 import Role from "./Role";
 import Storage from "./Storage";
+import ToolKit from "./ToolKit";
 /**
  * The Controller of AI
  * @prop {object} roles - All roles in the scene
