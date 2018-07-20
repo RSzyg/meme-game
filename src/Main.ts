@@ -44,6 +44,8 @@ export default class Main {
         document.addEventListener("keydown", (e) => this.keyboardController(e));
         document.addEventListener("keyup", (e) => this.keyboardController(e));
 
+        /** Create grids canvas  */
+        Storage.grids = new Canvas("3", Storage.sceneHeight, Storage.sceneWidth, null);
         /** Create mini-self-role canvas */
         Storage.miniSelfRole = new Canvas("4", 150, 200, "upperRight");
         /** Create mini-other-role canvas */
@@ -56,6 +58,7 @@ export default class Main {
         Storage.main = new Canvas("1", Storage.sceneHeight, Storage.sceneWidth, null);
 
         this.renderMap();
+        this.renderGrids();
 
         this.createRole("2");
         this.createRole("3");
@@ -90,6 +93,23 @@ export default class Main {
                 }
             }
         }
+    }
+
+    /**
+     * Render grids
+     */
+    private renderGrids() {
+        Storage.grids.ctx.globalAlpha = 0.3;
+        Storage.grids.ctx.beginPath();
+        for (let r = 39; r < Storage.sceneHeight - 1; r += 40) {
+            Storage.grids.ctx.moveTo(0, r);
+            Storage.grids.ctx.lineTo(Storage.sceneWidth, r);
+        }
+        for (let c = 39; c < Storage.sceneWidth - 1; c += 40) {
+            Storage.grids.ctx.moveTo(c, 0);
+            Storage.grids.ctx.lineTo(c, Storage.sceneWidth);
+        }
+        Storage.grids.ctx.stroke();
     }
 
     /**
