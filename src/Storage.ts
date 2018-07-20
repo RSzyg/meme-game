@@ -5,6 +5,7 @@ import Canvas from "./Canvas";
  * @prop {number} sceneWidth
  * @prop {object} images
  * @prop {Canvas} bar
+ * @prop {Canvas} grids
  * @prop {Canvas} miniMap
  * @prop {Canvas} miniSelfRole
  * @prop {Canvas} miniOtherRole
@@ -20,6 +21,7 @@ export default class Storage {
     public static sceneWidth: number = 800;
     public static images: { [key: string]: HTMLImageElement } = {};
     public static bar: Canvas;
+    public static grids: Canvas;
     public static miniMap: Canvas;
     public static miniSelfRole: Canvas;
     public static miniOtherRole: Canvas;
