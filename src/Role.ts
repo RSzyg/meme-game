@@ -61,8 +61,8 @@ export default class Role {
         this.attackKeepTimer = 0;
         this.verticalTimer = false;
         // element properties
-        this.selfHeight = data.height;
-        this.selfWidth = Role.healthBarWidth = data.width;
+        this.selfHeight = 40;
+        this.selfWidth = Role.healthBarWidth = 40;
         this.selfX = data.x;
         this.selfY = data.y;
         // basic properties

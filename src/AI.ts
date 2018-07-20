@@ -16,7 +16,7 @@ export default class AI {
     private keyMap: {[key: string]: {[key: string]: string}};
     private comPos: Position;
     private pleyerPos: Position;
-    private timeout: number[];
+    private timeout: any[];
     private vis: number[][];
 
     constructor(main: Main, roleId: string) {
@@ -49,6 +49,17 @@ export default class AI {
             },
         };
     }
+    public start() {
+        setTimeout(() => {
+            this.run();
+            this.attack();
+        }, 2000);
+    }
+    private attack() {
+        this.simulateKeyboardEvent("keydown", this.keyMap[this.roleId].attack);
+        setTimeout(() => this.simulateKeyboardEvent("keyup", this.keyMap[this.roleId].attack), 1);
+        setTimeout(() => this.attack(), Math.ceil(Math.random() * 250) + 100);
+    }
     /**
      * 37 ← 2
      * 38 ↑ 2
@@ -61,47 +72,49 @@ export default class AI {
      * 192 ` defense 3
      * 191 / attack 2
      */
-    public run() {
+    private run() {
+        console.log(this.comPos.BlockX, this.comPos.BlockY, this.pleyerPos.BlockX, this.pleyerPos.BlockY);
         this.clearSetTimeOut();
         this.search ();
         this.helpMove(0, 0);
-        this.simulateKeyboardEvent("keydown", this.keyMap[this.roleId].attack);
-        setTimeout(() => this.simulateKeyboardEvent("keyup", this.keyMap[this.roleId].attack), 1);
         setTimeout(() => this.run(), 1000);
     }
     private helpMove(idx: number, time: number) {
+        // console.log(time);
         if (idx === this.route.length) {
             return;
         }
         // 1 for up, 2 for down, 3 for right, 4 for left and 0 for adjust position
         switch (this.route[idx]) {
             case 0:
-                let dx: number;
                 if (this.computer.horizonDirection === "left") {
-                    dx = this.comPos.BlockX * 40 - this.comPos.PixelX;
+                    time += this.move(this.comPos.PixelX % 40, this.keyMap[this.roleId].left, time);
                 } else {
-                    dx = (this.comPos.BlockX * 40 - this.comPos.PixelX + 40) % 40;
-                }
-                if (dx > 0) {
-                    time += this.move(dx, this.keyMap[this.roleId].right);
-                } else {
-                    time += this.move(-dx, this.keyMap[this.roleId].left);
+                    time += this.move((40 - this.comPos.PixelX % 40) % 40, this.keyMap[this.roleId].right, time);
                 }
                 break;
             case 1:
-                time += this.move(40, this.keyMap[this.roleId].up);
+                if (this.computer.horizonDirection === "left") {
+                    this.move(20, this.keyMap[this.roleId].left, Math.max(1, time - 10));
+                } else {
+                    this.move(20, this.keyMap[this.roleId].right, Math.max(1, time - 10));
+                }
+                this.move(4, this.keyMap[this.roleId].up, Math.max(1, time + 10));
+                time += 40;
                 break;
             case 2:
+                time -= 10;
                 // time += this.move(40, this.keyMap[this.roleId].down);
                 break;
             case 3:
-                time += this.move(40, this.keyMap[this.roleId].right);
+                time += this.move(40, this.keyMap[this.roleId].right, time);
                 break;
             case 4:
-                time += this.move(40, this.keyMap[this.roleId].left);
+                time += this.move(40, this.keyMap[this.roleId].left, time);
                 break;
         }
-        this.timeout.push(setTimeout (() => this.helpMove(idx + 1, 0), time + 10));
+        this.helpMove(idx + 1, time + 10);
+        // this.timeout.push(setTimeout (() => this.helpMove(idx + 1, 0), time + 10));
     }
     private clearSetTimeOut() {
         for (const time of this.timeout) {
@@ -110,27 +123,34 @@ export default class AI {
     }
     private search() {
         this.vis = [];
-        for (let i = 0; i < Storage.simplifiedMap.length; i++) {
+        for (const row of Storage.simplifiedMap) {
             const tmpArr = [];
-            for (let j = 0; j < Storage.simplifiedMap[i].length; j++) {
-                tmpArr.push(Storage.simplifiedMap[i][j]);
+            for (const el of row) {
+                tmpArr.push(el);
             }
             this.vis.push(tmpArr);
         }
         this.route = [0];
         this.comPos.setPos(this.computer.x, this.computer.y + this.computer.height);
         this.pleyerPos.setPos(this.player.x, this.player.y + this.player.height);
-        console.log(this.comPos.BlockX, this.comPos.BlockY, this.pleyerPos.BlockX, this.pleyerPos.BlockY);
         this.bfs(this.comPos.BlockX, this.comPos.BlockY, this.pleyerPos.BlockX, this.pleyerPos.BlockY);
-        // this.bfs(9, 6, 17, 10);
         console.log(this.route);
     }
-    private checkValidMove(targetX: number, targetY: number): boolean {
-        if (targetX < 0 || targetY < 0 || targetX >= this.vis.length || targetY >= this.vis[targetX].length) {
+    private checkValidMove(targetX: number, targetY: number, nxtMove: number, route: number[]): boolean {
+        if (this.vis[targetY][targetX] === 1) {
             return false;
         }
-        if (this.vis[targetX][targetY] === 1) {
-            return false;
+        if (nxtMove === 0) {
+            if (this.vis[(targetY + 1) % 15][targetX] === 1
+            || this.vis[(targetY + 2) % 15][targetX] === 1) {
+                return false;
+            }
+            // if (route.length >= 3
+            //     && route[route.length - 1] === 0
+            //     && route[route.length - 2] === 0
+            //     && route[route.length - 3] === 0) {
+            //     return false;
+            // }
         }
         return true;
     }
@@ -145,9 +165,9 @@ export default class AI {
     private bfs(startX: number, startY: number, targetX: number, targetY: number) {
         // 1 for up, 2 for down, 3 for right, 4 for left and 0 for adjust position
         const dx: number[] = [0, 0, 1, -1];
-        const dy: number[] = [-1, 1, 0, 0];
+        const dy: number[] = [-3, 1, 0, 0];
         const queue = [];
-        this.vis[startX][startY] = 1;
+        this.vis[(startY + 15) % 15][(startX + 20) % 20] = 1;
         queue.push({
             x: startX,
             y: startY,
@@ -155,21 +175,23 @@ export default class AI {
             route: [0],
         });
         while (queue.length > 0) {
-            const now = queue.shift();
-            // console.log(now.x, now.y, this.vis[now.x][now.y]);
+            const now: {[key: string]: any} = queue.shift();
             if (now.x === targetX && now.y === targetY) {
                 this.route = [0];
+                now.route.shift();
                 for (const i of now.route) {
                     this.route.push(i + 1);
                 }
                 return;
             }
             for (let i = 0; i < 4; i++) {
-                if (this.checkValidMove(now.x + dx[i], now.y + dy[i])) {
-                    this.vis[now.x + dx[i]][now.y + dy[i]] = 1;
+                const nxtY: number = (now.y + dy[i] + 15) % 15;
+                const nxtX: number = (now.x + dx[i] + 20) % 20;
+                if (this.checkValidMove(nxtX, nxtY, i, now.route)) {
+                    this.vis[nxtY][nxtX] = 1;
                     queue.push({
-                        x: now.x + dx[i],
-                        y: now.y + dy[i],
+                        x: nxtX,
+                        y: nxtY,
                         dis: now.dis + 1,
                         route: this.getArr(now.route, i),
                     });
@@ -180,8 +202,10 @@ export default class AI {
     private dfs(startX: number, startY: number, targetX: number, targetY: number) {
         // to do
     }
-    private move(len: number, dir: string): number {
-        this.makeMove(len, dir);
+    private move(len: number, dir: string, timeout: number): number {
+        this.timeout.push(setTimeout(() => {
+            this.makeMove(len, dir);
+        }, timeout));
         return this.getMoveTime(len);
     }
     private getMoveTime(len: number): number {
@@ -192,7 +216,7 @@ export default class AI {
             this.simulateKeyboardEvent("keydown", dir);
             setTimeout(() => {
                 this.simulateKeyboardEvent("keyup", dir);
-            }, 5);
+            }, 20);
             return;
         }
         if (now >= len) {

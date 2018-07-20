@@ -14,7 +14,7 @@ export default class Position {
     }
     public setY(y: number) {
         this.y = y;
-        this.blockY = Math.floor(y / 40);
+        this.blockY = Math.floor((y - 1) / 40);
     }
     public setPos(x: number, y: number) {
         this.setX(x);
