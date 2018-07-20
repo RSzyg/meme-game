@@ -18,6 +18,8 @@ export default class AI {
     private pleyerPos: Position;
     private timeout: any[];
     private vis: number[][];
+    private runTimeOut: number;
+    private attackTimeOut: number;
 
     constructor(main: Main, roleId: string) {
         this.main = main;
@@ -58,7 +60,7 @@ export default class AI {
     private attack() {
         this.simulateKeyboardEvent("keydown", this.keyMap[this.roleId].attack);
         setTimeout(() => this.simulateKeyboardEvent("keyup", this.keyMap[this.roleId].attack), 1);
-        setTimeout(() => this.attack(), Math.ceil(Math.random() * 250) + 100);
+        this.attackTimeOut = setTimeout(() => this.attack(), Math.ceil(Math.random() * 250) + 100);
     }
     /**
      * 37 ← 2
@@ -77,10 +79,14 @@ export default class AI {
         this.clearSetTimeOut();
         this.search ();
         this.helpMove(0, 0);
-        setTimeout(() => this.run(), 1000);
+        if (this.player.action === "dead" || this.computer.action === "dead") {
+            clearTimeout(this.runTimeOut);
+            clearTimeout(this.attackTimeOut);
+            return;
+        }
+        this.runTimeOut = setTimeout(() => this.run(), 1000);
     }
     private helpMove(idx: number, time: number) {
-        // console.log(time);
         if (idx === this.route.length) {
             return;
         }
