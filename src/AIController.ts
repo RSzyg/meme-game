@@ -27,7 +27,9 @@ export default class AIController {
 
     public start() {
         this.main();
-        setTimeout(() => this.followHim(), 3000);
+        setTimeout(() => {
+            this.followHim();
+        }, 3000);
         // this.moveController(2, 100);
         // this.moveController(1, 20);
     }
@@ -39,7 +41,7 @@ export default class AIController {
             if (this.keyTimer[command.code]) {
                 cancelAnimationFrame(this.keyTimer[command.code]);
             }
-            this.moveController(command.code, command.frames);
+            this.moveController(command.code, command.frames, command.offsets);
         }
         requestAnimationFrame(() => this.main());
     }
@@ -66,7 +68,7 @@ export default class AIController {
                 last.y === finalY
             ) {
                 // resolve node.route
-                console.log(last.route);
+                this.resolveRoute(last.route);
                 return;
             }
             for (let dir = 0; dir < 3; dir++) {
@@ -112,11 +114,7 @@ export default class AIController {
                     isCollide = this.collide(dir, next, last);
                 }
                 const route: Array<{[key: string]: any}> = last.route.slice(0);
-                route.push({
-                    x: next.x,
-                    y: next.y,
-                    direction: this.resolveDirection(dir),
-                });
+                route.push({ direction: dir });
                 next.route = route;
 
                 const flagKey: string = JSON.stringify({ x, y, jumpSpeed, dir });
@@ -126,36 +124,13 @@ export default class AIController {
                 }
             }
         }
-        console.log(finalY, finalX);
-        // horizon
-        // let rightDis: number;
-        // let leftDis: number;
-        // if (this.roles["2"].x > this.roles["3"].x) {
-        //     rightDis = this.roles["2"].x - this.roles["3"].x;
-        //     leftDis = (Storage.sceneWidth - rightDis) % Storage.sceneWidth;
-        // } else {
-        //     leftDis = this.roles["3"].x - this.roles["2"].x;
-        //     rightDis = (Storage.sceneWidth - leftDis) % Storage.sceneWidth;
-        // }
-
-        // if (leftDis < rightDis) {
-        //     this.commandList.push({
-        //         code: "MoveLeft",
-        //         frames: Math.floor(leftDis / 4),
-        //     });
-        // } else {
-        //     this.commandList.push({
-        //         code: "MoveRight",
-        //         frames: Math.floor(rightDis / 4),
-        //     });
-        // }
     }
 
     private collide(dir: number, next: {[key: string]: any}, last: {[key: string]: any}): boolean {
         if (Math.abs(Storage.dx[dir])) {
             const nleft: number = (next.x + Storage.sceneWidth) % Storage.sceneWidth;
             const nright: number = (next.x - 1 + this.roles["3"].width + Storage.sceneWidth) % Storage.sceneWidth;
-            for (let r = last.y; r < last.y + this.roles["3"].height; r++) {
+            for (let r = next.y; r < next.y + this.roles["3"].height; r++) {
                 const nr: number = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.dx[dir] > 0) {
                     if (this.magicMap[nr][nright]) {
@@ -172,7 +147,7 @@ export default class AIController {
         } else if (Math.abs(Storage.dy[dir])) {
             const nhead = (next.y + Storage.sceneHeight) % Storage.sceneHeight;
             const nfoot = (next.y + this.roles["3"].height - 1 + Storage.sceneHeight) % Storage.sceneHeight;
-            for (let c = last.x; c < last.x + this.roles["3"].width; c++) {
+            for (let c = next.x; c < next.x + this.roles["3"].width; c++) {
                 const nc: number = (c + Storage.sceneWidth) % Storage.sceneWidth;
                 if (Storage.dy[dir] > 0) {
                     if (this.magicMap[nfoot][nc]) {
@@ -192,19 +167,38 @@ export default class AIController {
         return false;
     }
 
-    private resolveDirection(dir: number): string {
-        switch (dir) {
-            case 0:
-                return "MoveLeft";
-            case 1:
-                return "Jump";
-            case 2:
-                return "MoveRight";
-            case 3:
-                return "MoveDown";
-            default:
-                break;
+    private resolveRoute(route: Array<{[key: string]: any}>) {
+        this.commandList = [];
+        let temp: number = -1;
+        let code: string;
+        let frames: number = 0;
+        let offsets: number = 0;
+        for (const node of route) {
+            switch (temp) {
+                case 0:
+                    code = "MoveLeft";
+                    break;
+                case 1:
+                    code = "Jump";
+                    break;
+                case 2:
+                    code = "MoveRight";
+                    break;
+                default:
+                    code = "";
+                    break;
+            }
+            if (temp === -1) {
+                temp = node.direction;
+            } else if (node.direction !== temp) {
+                this.commandList.push({ code, frames, offsets });
+                temp = node.direction;
+                offsets += frames;
+                frames = 0;
+            }
+            frames++;
         }
+        this.commandList.push({ code, frames, offsets });
     }
 
     private simulateKeyboardEvent(type: string, code: string) {
@@ -231,8 +225,12 @@ export default class AIController {
      * Control the AI role moving
      * @param {number} direction - left->up->right
      */
-    private moveController(code: string, frames: number) {
-        this.simulateKeyboardEvent("keydown", code);
-        this.run(code, frames);
+    private moveController(code: string, frames: number, offsets: number) {
+        if (offsets === 0) {
+            this.simulateKeyboardEvent("keydown", code);
+            this.run(code, frames);
+        } else {
+            requestAnimationFrame(() => this.moveController(code, frames, offsets - 1));
+        }
     }
 }
