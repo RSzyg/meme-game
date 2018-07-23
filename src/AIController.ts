@@ -1,6 +1,6 @@
 import Role from "./Role";
 import Storage from "./Storage";
-import ToolKit from "./ToolKit";
+import { PriorityQueue } from "./ToolKit";
 /**
  * The Controller of AI
  * @prop {object} roles - All roles in the scene
@@ -26,7 +26,7 @@ export default class AIController {
     }
 
     public start() {
-        this.main();
+        // this.main();
         setTimeout(() => {
             this.followHim();
         }, 3000);
