@@ -3,12 +3,16 @@
  * Include some tool in calculation
  */
 export class PriorityQueue {
-    private heap: number[];
-    constructor() {
+    private heap: Array<{[key: string]: any}>;
+    private goalX: number;
+    private goalY: number;
+    constructor(x: number, y: number) {
         this.heap = [];
+        this.goalX = x;
+        this.goalY = y;
     }
 
-    public get top(): number {
+    public get top(): {[key: string]: any} {
         return this.heap[0];
     }
 
@@ -16,7 +20,7 @@ export class PriorityQueue {
         return this.heap.length;
     }
 
-    public push_back(value: number) {
+    public push_back(value: {[key: string]: any}) {
         this.heap.push(value);
         this.siftUp();
         return this.size;
@@ -51,7 +55,7 @@ export class PriorityQueue {
             (left < this.size && this.compare(left, node)) ||
             (right < this.size && this.compare(right, node))
         ) {
-            let minChild = (right < this.size && this.compare(right, node)) ? right : left;
+            const minChild = (right < this.size && this.compare(right, left)) ? right : left;
             this.swap(node, minChild);
             node = minChild;
             left = node * 2 + 1;
@@ -64,7 +68,11 @@ export class PriorityQueue {
     }
 
     private compare(i: number, j: number) {
-        return this.heap[i] < this.heap[j];
+        const ixDis = Math.abs(this.heap[i].x - this.goalX);
+        const iyDis = Math.abs(this.heap[i].y - this.goalY);
+        const jxDis = Math.abs(this.heap[j].x - this.goalX);
+        const jyDis = Math.abs(this.heap[j].y - this.goalY);
+        return  (ixDis * ixDis + iyDis * iyDis) < (jxDis * jxDis + jyDis * jyDis);
     }
 }
 
@@ -72,12 +80,12 @@ export class Equation {
     public static solveQuadraticEquation(
         first: number,
         second: number,
-        third: number
+        third: number,
     ): number[] {
         const solution: number[] = [];
         const delta: number = Math.sqrt(Math.pow(second, 2) - 4 * first * third);
         solution.push((delta - second) / 2 * first);
         solution.push((-delta - second) / 2 * first);
         return solution;
-    };
+    }
 }

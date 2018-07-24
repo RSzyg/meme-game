@@ -26,7 +26,7 @@ export default class AIController {
     }
 
     public start() {
-        // this.main();
+        this.main();
         setTimeout(() => {
             this.followHim();
         }, 3000);
@@ -47,12 +47,13 @@ export default class AIController {
     }
 
     private followHim() {
-        const queue: Array<{[key: string]: any}> = [];
-        const finalX: number = this.roles["2"].x;
-        const finalY: number = this.roles["2"].y;
+        let count = 0;
+        const goalX = this.roles["2"].x;
+        const goalY = this.roles["2"].y;
         const moveSpeed: number = this.roles["3"].moveSpeed;
+        const queue: PriorityQueue = new PriorityQueue(goalX, goalY);
 
-        queue.push({
+        queue.push_back({
             x: this.roles["3"].x,
             y: this.roles["3"].y,
             inAir: this.roles["3"].verticalTimer,
@@ -60,73 +61,86 @@ export default class AIController {
             route: [],
         });
 
-        while (queue.length) {
-            const last: {[key: string]: any} = queue.shift();
+        while (queue.size) {
+            count++;
+            const node: {[key: string]: any} = queue.pop();
             if (
-                (last.x === finalX - this.roles["3"].width ||
-                last.x === finalX + this.roles["2"].width) &&
-                last.y === finalY
+                (node.x === goalX - this.roles["3"].width ||
+                node.x === goalX + this.roles["2"].width) &&
+                node.y === goalY
             ) {
                 // resolve node.route
-                this.resolveRoute(last.route);
+                this.resolveRoute(node.route);
+                console.log(count);
                 return;
             }
             for (let dir = 0; dir < 3; dir++) {
                 let isCollide: boolean;
-                const x: number = last.x + moveSpeed * Storage.dx[dir];
-                const y: number = last.y;
-                const inAir: boolean = last.inAir;
-                const jumpSpeed: number = last.jumpSpeed;
+                const x: number = node.x;
+                const y: number = node.y;
+                const inAir: boolean = node.inAir;
+                const jumpSpeed: number = node.jumpSpeed;
                 const next: {[key: string]: any} = {
                     x,
                     y,
                     inAir,
                     jumpSpeed,
                 };
-                if (next.inAir) {
-                    next.y -= next.jumpSpeed;
-                    next.jumpSpeed--;
-                    isCollide = true;
-                    if (next.jumpSpeed > 0) {
-                        while (isCollide) {
-                            isCollide = this.collide(1, next, last);
-                        }
-                    } else {
-                        while (isCollide) {
-                            isCollide = this.collide(3, next, last);
-                        }
-                    }
-                } else {
-                    next.y++;
-                    if (!this.collide(3, next, last)) {
-                        next.jumpSpeed = -1;
-                        next.inAir = true;
-                    }
-                    if (!next.inAir && Math.abs(Storage.dy[dir])) {
+
+                if (Math.abs(Storage.dy[dir])) {
+                    if (!next.inAir) {
                         next.inAir = true;
                         next.jumpSpeed = this.roles["3"].initJumpSpeed;
                     }
                 }
+
+                next.x += moveSpeed * Storage.dx[dir];
                 next.x = (next.x + Storage.sceneWidth) % Storage.sceneWidth;
-                next.y = (next.y + Storage.sceneHeight) % Storage.sceneHeight;
                 isCollide = true;
-                while (isCollide) {
-                    isCollide = this.collide(dir, next, last);
+                if (Math.abs(Storage.dx[dir])) {
+                    while (isCollide) {
+                        isCollide = this.collide(dir, next);
+                    }
                 }
-                const route: Array<{[key: string]: any}> = last.route.slice(0);
-                route.push({ direction: dir });
+
+                if (next.inAir) {
+                    next.y -= next.jumpSpeed;
+                    if (next.jumpSpeed > 0) {
+                        isCollide = true;
+                        while (isCollide) {
+                            isCollide = this.collide(1, next);
+                        }
+                    } else {
+                        isCollide = true;
+                        while (isCollide) {
+                            isCollide = this.collide(3, next);
+                        }
+                    }
+                    next.jumpSpeed--;
+                } else {
+                    next.y++;
+                    if (!this.collide(3, next)) {
+                        next.y--;
+                        next.jumpSpeed = -1;
+                        next.inAir = true;
+                    }
+                }
+                next.y = (next.y + Storage.sceneHeight) % Storage.sceneHeight;
+
+                const route: Array<{[key: string]: any}> = node.route.slice(0);
+                route.push({ x: next.x, y: next.y, inAir: next.inAir, direction: dir });
                 next.route = route;
 
                 const flagKey: string = JSON.stringify({ x, y, jumpSpeed, dir });
                 if (!this.routeFlag[flagKey]) {
                     this.routeFlag[flagKey] = true;
-                    queue.push(next);
+                    queue.push_back(next);
                 }
             }
         }
     }
 
-    private collide(dir: number, next: {[key: string]: any}, last: {[key: string]: any}): boolean {
+    private collide(dir: number, next: {[key: string]: any}): boolean {
         if (Math.abs(Storage.dx[dir])) {
             const nleft: number = (next.x + Storage.sceneWidth) % Storage.sceneWidth;
             const nright: number = (next.x - 1 + this.roles["3"].width + Storage.sceneWidth) % Storage.sceneWidth;
@@ -149,7 +163,7 @@ export default class AIController {
             const nfoot = (next.y + this.roles["3"].height - 1 + Storage.sceneHeight) % Storage.sceneHeight;
             for (let c = next.x; c < next.x + this.roles["3"].width; c++) {
                 const nc: number = (c + Storage.sceneWidth) % Storage.sceneWidth;
-                if (Storage.dy[dir] > 0) {
+                if (next.jumpSpeed < 0) {
                     if (this.magicMap[nfoot][nc]) {
                         next.y--;
                         next.inAir = false;
@@ -158,7 +172,7 @@ export default class AIController {
                 } else {
                     if (this.magicMap[nhead][nc]) {
                         next.y++;
-                        next.jumpSpeed = 0;
+                        next.jumpSpeed = 1;
                         return true;
                     }
                 }
@@ -192,8 +206,8 @@ export default class AIController {
                 temp = node.direction;
             } else if (node.direction !== temp) {
                 this.commandList.push({ code, frames, offsets });
-                temp = node.direction;
                 offsets += frames;
+                temp = node.direction;
                 frames = 0;
             }
             frames++;
