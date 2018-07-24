@@ -1,4 +1,6 @@
 import AI from "./AI";
+import AStar from "./AStar/AStar";
+import Map from "./AStar/Map";
 import Main from "./Main";
 import Storage from "./Storage";
 
@@ -42,8 +44,10 @@ window.onload = () => {
             current++;
             if (current === total) {
                 main.createScene();
-                const ai: AI = new AI(main, "3");
-                ai.start();
+                // const ai: AI = new AI(main, "3");
+                // ai.start();
+                // const Astar: AStar = new AStar([[1, 1], [0, 0]], new Map());
+                const mp: Map = new Map();
             }
         };
     }

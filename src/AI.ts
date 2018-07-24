@@ -16,7 +16,7 @@ export default class AI {
     private keyMap: {[key: string]: {[key: string]: string}};
     private comPos: Position;
     private pleyerPos: Position;
-    private timeout: any[];
+    private timeout: number[];
     private vis: number[][];
     private runTimeOut: number;
     private attackTimeOut: number;
@@ -52,28 +52,21 @@ export default class AI {
         };
     }
     public start() {
+        document.addEventListener("click", (e) => this.changePosition(e));
         setTimeout(() => {
             this.run();
             this.attack();
         }, 2000);
+    }
+    private changePosition(e: MouseEvent) {
+        this.computer.x = e.clientX;
+        this.computer.y = e.clientY;
     }
     private attack() {
         this.simulateKeyboardEvent("keydown", this.keyMap[this.roleId].attack);
         setTimeout(() => this.simulateKeyboardEvent("keyup", this.keyMap[this.roleId].attack), 1);
         this.attackTimeOut = setTimeout(() => this.attack(), Math.ceil(Math.random() * 250) + 100);
     }
-    /**
-     * 37 ← 2
-     * 38 ↑ 2
-     * 39 → 2
-     * 68 D left 3
-     * 82 R up 3
-     * 71 G right 3
-     * 49 1 attack 3
-     * 190 . defense 2
-     * 192 ` defense 3
-     * 191 / attack 2
-     */
     private run() {
         console.log(this.comPos.BlockX, this.comPos.BlockY, this.pleyerPos.BlockX, this.pleyerPos.BlockY);
         this.clearSetTimeOut();
@@ -148,15 +141,13 @@ export default class AI {
         }
         if (nxtMove === 0) {
             if (this.vis[(targetY + 1) % 15][targetX] === 1
+            || this.vis[(targetY + 2) % 15][targetX] === 1
             || this.vis[(targetY + 2) % 15][targetX] === 1) {
                 return false;
             }
-            // if (route.length >= 3
-            //     && route[route.length - 1] === 0
-            //     && route[route.length - 2] === 0
-            //     && route[route.length - 3] === 0) {
-            //     return false;
-            // }
+            if (route.length >= 1 && route[route.length - 1] === 0) {
+                return false;
+            }
         }
         return true;
     }
@@ -171,7 +162,7 @@ export default class AI {
     private bfs(startX: number, startY: number, targetX: number, targetY: number) {
         // 1 for up, 2 for down, 3 for right, 4 for left and 0 for adjust position
         const dx: number[] = [0, 0, 1, -1];
-        const dy: number[] = [-3, 1, 0, 0];
+        const dy: number[] = [-4, 1, 0, 0];
         const queue = [];
         this.vis[(startY + 15) % 15][(startX + 20) % 20] = 1;
         queue.push({
@@ -191,6 +182,9 @@ export default class AI {
                 return;
             }
             for (let i = 0; i < 4; i++) {
+                // if (i === 1) {
+                //     continue;
+                // }
                 const nxtY: number = (now.y + dy[i] + 15) % 15;
                 const nxtX: number = (now.x + dx[i] + 20) % 20;
                 if (this.checkValidMove(nxtX, nxtY, i, now.route)) {
