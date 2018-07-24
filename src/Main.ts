@@ -248,8 +248,11 @@ export default class Main {
                 }
                 this.roles["2"].jumpSpeed--;
             } else {
-                this.roles["2"].jumpSpeed = -1;
-                this.roles["2"].verticalTimer = true;
+                this.roles["2"].y++;
+                if (!this.collisionJudge(this.roles["2"], 3)) {
+                    this.roles["2"].jumpSpeed = -1;
+                    this.roles["2"].verticalTimer = true;
+                }
             }
             if (this.roles["2"].action === undefined && this.keycount.KeyZ === 1) {
                 /**
@@ -341,8 +344,11 @@ export default class Main {
                 }
                 this.roles["3"].jumpSpeed--;
             } else {
-                this.roles["3"].jumpSpeed = -1;
-                this.roles["3"].verticalTimer = true;
+                this.roles["3"].y++;
+                if (!this.collisionJudge(this.roles["3"], 3)) {
+                    this.roles["3"].jumpSpeed = -1;
+                    this.roles["3"].verticalTimer = true;
+                }
             }
             if (this.roles["3"].action === undefined && this.keycount.Attack === 1) {
                 /**
