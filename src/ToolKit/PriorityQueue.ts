@@ -2,7 +2,7 @@
  * ToolKit
  * Include some tool in calculation
  */
-export class PriorityQueue {
+export default class PriorityQueue {
     private heap: Array<{[key: string]: any}>;
     private goalX: number;
     private goalY: number;
@@ -73,19 +73,5 @@ export class PriorityQueue {
         const jxDis = Math.abs(this.heap[j].x - this.goalX);
         const jyDis = Math.abs(this.heap[j].y - this.goalY);
         return  (ixDis * ixDis + iyDis * iyDis) < (jxDis * jxDis + jyDis * jyDis);
-    }
-}
-
-export class Equation {
-    public static solveQuadraticEquation(
-        first: number,
-        second: number,
-        third: number,
-    ): number[] {
-        const solution: number[] = [];
-        const delta: number = Math.sqrt(Math.pow(second, 2) - 4 * first * third);
-        solution.push((delta - second) / 2 * first);
-        solution.push((-delta - second) / 2 * first);
-        return solution;
     }
 }

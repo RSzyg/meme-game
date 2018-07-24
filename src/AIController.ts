@@ -1,6 +1,6 @@
 import Role from "./Role";
 import Storage from "./Storage";
-import { PriorityQueue } from "./ToolKit";
+import PriorityQueue from "./ToolKit/PriorityQueue";
 /**
  * The Controller of AI
  * @prop {object} roles - All roles in the scene
@@ -71,7 +71,6 @@ export default class AIController {
             ) {
                 // resolve node.route
                 this.resolveRoute(node.route);
-                console.log(count);
                 return;
             }
             for (let dir = 0; dir < 3; dir++) {
