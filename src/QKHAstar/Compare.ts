@@ -5,7 +5,6 @@ export default class Compare {
     private mMatrix: PathFinderNodeFast[][];
 
     constructor(matrix: PathFinderNodeFast[][]) {
-        this.mMatrix = [];
         for (const vec of matrix) {
             this.mMatrix.push(vec.slice(0));
         }

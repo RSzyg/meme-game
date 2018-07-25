@@ -13,8 +13,8 @@ export default class Map {
     public tiles: TileType[][];
     // private tilesSprites: SpriteRenderer[][];
     // public mSpritesContainer: Transform
-    public mWidth: number = 50;
-    public mHeight: number = 42;
+    public mWidth: number = 40;
+    public mHeight: number = 40;
 
     // public mapRoom: MapRoomData;
 
@@ -65,7 +65,20 @@ export default class Map {
         }
         return (this.tiles[x][y] !== TileType.Empty);
     }
-
+    public InitMap(): void {
+        this.tiles = [];
+        for (const arr of this.mGrid) {
+            const tmp = [];
+            for (const block of arr) {
+                if (block === 1) {
+                    tmp.push(TileType.Block);
+                } else if (block === 0) {
+                    tmp.push(TileType.Empty);
+                }
+            }
+            this.tiles.push(tmp);
+        }
+    }
     public InitPathFinder(): void {
         this.mPathFinder = new PathFinderFast(this.mGrid, this);
         this.mPathFinder.Formula                = HeuristicFormula.Manhattan;
