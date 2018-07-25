@@ -4,12 +4,12 @@
  */
 export default class PriorityQueue {
     private heap: Array<{[key: string]: any}>;
-    private goalX: number;
-    private goalY: number;
-    constructor(x: number, y: number) {
+    private endX: number;
+    private endY: number;
+    constructor(ex: number, ey: number) {
         this.heap = [];
-        this.goalX = x;
-        this.goalY = y;
+        this.endX = ex;
+        this.endY = ey;
     }
 
     public get top(): {[key: string]: any} {
@@ -68,10 +68,15 @@ export default class PriorityQueue {
     }
 
     private compare(i: number, j: number) {
-        const ixDis = Math.abs(this.heap[i].x - this.goalX);
-        const iyDis = Math.abs(this.heap[i].y - this.goalY);
-        const jxDis = Math.abs(this.heap[j].x - this.goalX);
-        const jyDis = Math.abs(this.heap[j].y - this.goalY);
-        return  (ixDis * ixDis + iyDis * iyDis) < (jxDis * jxDis + jyDis * jyDis);
+        const iToEndX = Math.abs(this.heap[i].x - this.endX);
+        const iToEndY = Math.abs(this.heap[i].y - this.endY);
+
+        const jToEndX = Math.abs(this.heap[j].x - this.endX);
+        const jToEndY = Math.abs(this.heap[j].y - this.endY);
+
+        const iToEndStep = iToEndX / 4 + iToEndY / 190;
+        const jToEndStep = jToEndX / 4 + jToEndY / 190;
+
+        return  (this.heap[i].route.length + iToEndStep) < (this.heap[j].route.length + jToEndStep);
     }
 }

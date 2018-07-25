@@ -48,16 +48,17 @@ export default class AIController {
 
     private followHim() {
         let count = 0;
-        const goalX = this.roles["2"].x;
-        const goalY = this.roles["2"].y;
+        const endX = this.roles["2"].x;
+        const endY = this.roles["2"].y;
         const moveSpeed: number = this.roles["3"].moveSpeed;
-        const queue: PriorityQueue = new PriorityQueue(goalX, goalY);
+        const queue: PriorityQueue = new PriorityQueue(endX, endY);
 
         queue.push_back({
             x: this.roles["3"].x,
             y: this.roles["3"].y,
             inAir: this.roles["3"].verticalTimer,
             jumpSpeed: this.roles["3"].jumpSpeed,
+            steps: 0,
             route: [],
         });
 
@@ -65,12 +66,14 @@ export default class AIController {
             count++;
             const node: {[key: string]: any} = queue.pop();
             if (
-                (node.x === goalX - this.roles["3"].width ||
-                node.x === goalX + this.roles["2"].width) &&
-                node.y === goalY
+                (node.x === endX - this.roles["3"].width ||
+                node.x === endX + this.roles["2"].width) &&
+                node.y === endY
             ) {
                 // resolve node.route
                 this.resolveRoute(node.route);
+                console.log(node.route);
+                console.log(count);
                 return;
             }
             for (let dir = 0; dir < 3; dir++) {
@@ -79,11 +82,13 @@ export default class AIController {
                 const y: number = node.y;
                 const inAir: boolean = node.inAir;
                 const jumpSpeed: number = node.jumpSpeed;
+                const steps: number = node.steps + 1;
                 const next: {[key: string]: any} = {
                     x,
                     y,
                     inAir,
                     jumpSpeed,
+                    steps,
                 };
 
                 if (Math.abs(Storage.dy[dir])) {
@@ -103,6 +108,7 @@ export default class AIController {
                 }
 
                 if (next.inAir) {
+                    next.steps++;
                     next.y -= next.jumpSpeed;
                     if (next.jumpSpeed > 0) {
                         isCollide = true;
@@ -127,7 +133,7 @@ export default class AIController {
                 next.y = (next.y + Storage.sceneHeight) % Storage.sceneHeight;
 
                 const route: Array<{[key: string]: any}> = node.route.slice(0);
-                route.push({ x: next.x, y: next.y, inAir: next.inAir, direction: dir });
+                route.push({ direction: dir });
                 next.route = route;
 
                 const flagKey: string = JSON.stringify({ x, y, jumpSpeed, dir });
