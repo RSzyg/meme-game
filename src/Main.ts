@@ -33,6 +33,9 @@ export default class Main {
         this.bulletId = 0;
     }
 
+    public Role(roleId: string): Role {
+        return this.roles[roleId];
+    }
     /**
      * Create a scene
      * The entry method
@@ -66,7 +69,17 @@ export default class Main {
 
         this.magicAI.start();
     }
-
+    public aiKeyboardController(type: string, keyCode: number) {
+        if (type === "keydown") {
+            this.keydown[keyCode] = true;
+            if (!this.keycount[keyCode]) {
+                this.keycount[keyCode] = 1;
+            }
+        } else if (type === "keyup") {
+            this.keydown[keyCode] = false;
+            this.keycount[keyCode] = 0;
+        }
+    }
     /**
      * Render the map
      */
@@ -105,7 +118,7 @@ export default class Main {
     private renderMiniMap() {
         Storage.miniMap.ctx.globalAlpha = 0.4;
         Storage.miniMap.ctx.fillStyle = "#ffffff";
-        Storage.miniMap.ctx.fillRect(0, 0, 200, 150);
+        Storage.miniMap.ctx.fillRect(0, 0, 200, 160);
         for (let r = 0; r < Storage.simplifiedMap.length; r++) {
             for (let c = 0; c < Storage.simplifiedMap[r].length; c++) {
                 if (Storage.simplifiedMap[r][c] === 1) {

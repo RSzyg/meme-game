@@ -7,7 +7,7 @@
         },
         "new-parens": true,
         "no-arg": true,
-        "no-bitwise": true,
+        "no-bitwise": false,
 	    "only-arrow-functions": true,
         "no-conditional-assignment": true,
         "no-consecutive-blank-lines": false,
