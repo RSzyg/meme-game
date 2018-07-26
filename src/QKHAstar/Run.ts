@@ -9,10 +9,10 @@ export default class Run {
         this.a = 0;
         this.main = main;
         this.pathFinder = new Astar(main, roleId);
-        this.pathFinder.Init();
     }
     public run() {
         this.a = 0;
+        this.pathFinder.Init();
     }
     public attack() {
         // to do

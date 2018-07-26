@@ -63,11 +63,11 @@ export default class Main {
         this.createRole("2");
         this.createRole("3");
 
-        // this.magicAI = new AIController(this.roles);
+        this.magicAI = new AIController(this.roles);
         this.renderMiniMap();
         this.update();
 
-        // this.magicAI.start();
+        this.magicAI.start();
     }
     public aiKeyboardController(type: string, keyCode: number) {
         if (type === "keydown") {

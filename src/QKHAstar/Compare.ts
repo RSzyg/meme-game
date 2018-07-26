@@ -1,5 +1,5 @@
 import Location from "./Location";
-import PathFinderNodeFast from "./PathFinderNode";
+import PathFinderNodeFast from "../AStar/PathFinderNode";
 
 export default class Compare {
     private mMatrix: PathFinderNodeFast[][];

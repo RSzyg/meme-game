@@ -1,3 +1,4 @@
+import Storage from "../Storage";
 /**
  * ToolKit
  * Include some tool in calculation
@@ -68,15 +69,32 @@ export default class PriorityQueue {
     }
 
     private compare(i: number, j: number) {
-        const iToEndX = Math.abs(this.heap[i].x - this.endX);
-        const iToEndY = Math.abs(this.heap[i].y - this.endY);
+        // return i < j;
+        let iToEndX = Math.abs(this.heap[i].x - this.endX);
+        let iToEndY = Math.abs(this.heap[i].y - this.endY);
 
-        const jToEndX = Math.abs(this.heap[j].x - this.endX);
-        const jToEndY = Math.abs(this.heap[j].y - this.endY);
+        iToEndX = Math.min(iToEndX, Storage.sceneWidth - iToEndX);
+        iToEndY = Math.min(iToEndY, Storage.sceneHeight - iToEndY);
+
+        let jToEndX = Math.abs(this.heap[j].x - this.endX);
+        let jToEndY = Math.abs(this.heap[j].y - this.endY);
+
+        jToEndX = Math.min(jToEndX, Storage.sceneWidth - jToEndX);
+        jToEndY = Math.min(jToEndY, Storage.sceneHeight - jToEndY);
 
         const iToEndStep = iToEndX / 4 + iToEndY / 190;
         const jToEndStep = jToEndX / 4 + jToEndY / 190;
 
-        return  (this.heap[i].route.length + iToEndStep) < (this.heap[j].route.length + jToEndStep);
+        const xishu = 1;
+
+        // const Hi = xishu * iToEndStep;
+        // const Hj = xishu * jToEndStep;
+
+        // const Gi = this.heap[i].step; // + this.heap[i].jumpSpeed / 4;
+        // const Gj = this.heap[j].step; // + this.heap[j].jumpSpeed / 4;
+
+        // return Hi + Gi < Hj + Gj;
+        return  (this.heap[i].route.length + iToEndStep * xishu)
+              < (this.heap[j].route.length + jToEndStep * xishu);
     }
 }

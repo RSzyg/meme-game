@@ -18,17 +18,27 @@ export default class AIController {
         this.roles = roles;
         this.commandList = [];
         this.keyTimer = {};
-        this.magicMap = [];
-        this.routeFlag = {};
-        for (let r = 0; r < Storage.fullyMap.length; r++) {
-            this.magicMap[r] = Storage.fullyMap[r].slice(0);
-        }
+        // this.magicMap = [];
+        // this.routeFlag = {};
+        // for (let r = 0; r < Storage.fullyMap.length; r++) {
+        //     this.magicMap[r] = Storage.fullyMap[r].slice(0);
+        // }
     }
 
     public start() {
         this.main();
         setTimeout(() => {
-            this.followHim();
+            if (this.commandList.length === 0) {
+                this.commandList = [];
+                this.keyTimer = {};
+                this.magicMap = [];
+                this.routeFlag = {};
+                for (let r = 0; r < Storage.fullyMap.length; r++) {
+                    this.magicMap[r] = Storage.fullyMap[r].slice(0);
+                }
+                this.followHim();
+                this.start();
+            }
         }, 3000);
         // this.moveController(2, 100);
         // this.moveController(1, 20);
@@ -38,14 +48,28 @@ export default class AIController {
         while (this.commandList.length) {
             let command: {[key: string]: any};
             command = this.commandList.shift();
-            if (this.keyTimer[command.code]) {
-                cancelAnimationFrame(this.keyTimer[command.code]);
-            }
             this.moveController(command.code, command.frames, command.offsets);
         }
         requestAnimationFrame(() => this.main());
     }
-
+    private randomNum(num: number): number {
+        return Math.floor(Math.random() * (num + 1));
+    }
+    private randomColor16(): string {
+        let r = this.randomNum(255).toString(16);
+        let g = this.randomNum(255).toString(16);
+        let b = this.randomNum(255).toString(16);
+        if (r.length < 2) {
+            r = "0" + r;
+        }
+        if (g.length < 2) {
+            g = "0" + g;
+        }
+        if (b.length < 2) {
+            b = "0" + b;
+        }
+        return "#" + r + g + b;
+    }
     private followHim() {
         let count = 0;
         const endX = this.roles["2"].x;
@@ -61,18 +85,24 @@ export default class AIController {
             steps: 0,
             route: [],
         });
-
+        // let time = 0;
         while (queue.size) {
             count++;
             const node: {[key: string]: any} = queue.pop();
             if (
                 (node.x === endX - this.roles["3"].width ||
                 node.x === endX + this.roles["2"].width) &&
-                node.y === endY
+                // node.y === endY
+                Math.abs(node.y - endY) < 10
             ) {
                 // resolve node.route
                 this.resolveRoute(node.route);
                 console.log(node.route);
+                const context =  Storage.grids.ctx;
+                context.fillStyle = this.randomColor16();
+                for (const point of node.route) {
+                    context.fillRect(point.x, point.y, 10, 10);
+                }
                 console.log(count);
                 return;
             }
@@ -133,7 +163,7 @@ export default class AIController {
                 next.y = (next.y + Storage.sceneHeight) % Storage.sceneHeight;
 
                 const route: Array<{[key: string]: any}> = node.route.slice(0);
-                route.push({ direction: dir });
+                route.push({ x: next.x, y: next.y, inAir: next.inAir, jumpSpeed: next.jumpSpeed, direction: dir });
                 next.route = route;
 
                 const flagKey: string = JSON.stringify({ x, y, jumpSpeed, dir });
@@ -141,8 +171,15 @@ export default class AIController {
                     this.routeFlag[flagKey] = true;
                     queue.push_back(next);
                 }
+
+                // const context =  Storage.grids.ctx;
+                // setTimeout(() => {
+                //     context.fillRect(next.x, next.y, 4, 4);
+                // }, time);
+                // time += 5;
             }
         }
+        console.log(count);
     }
 
     private collide(dir: number, next: {[key: string]: any}): boolean {
@@ -233,6 +270,7 @@ export default class AIController {
     }
 
     private run(code: string, frames: number) {
+        // console.log("run: ", code, frames);
         if (frames === 0) {
             this.simulateKeyboardEvent("keyup", code);
             return;
@@ -245,7 +283,11 @@ export default class AIController {
      * @param {number} direction - left->up->right
      */
     private moveController(code: string, frames: number, offsets: number) {
+        // console.log("moveController: ", code, frames, offsets);
         if (offsets === 0) {
+            if (this.keyTimer[code]) {
+                cancelAnimationFrame(this.keyTimer[code]);
+            }
             this.simulateKeyboardEvent("keydown", code);
             this.run(code, frames);
         } else {
