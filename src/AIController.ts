@@ -38,9 +38,6 @@ export default class AIController {
         while (this.commandList.length) {
             let command: {[key: string]: any};
             command = this.commandList.shift();
-            if (this.keyTimer[command.code]) {
-                cancelAnimationFrame(this.keyTimer[command.code]);
-            }
             this.moveController(command.code, command.frames, command.offsets);
         }
         requestAnimationFrame(() => this.main());
@@ -65,16 +62,19 @@ export default class AIController {
         while (queue.size) {
             count++;
             const node: {[key: string]: any} = queue.pop();
-            if (
-                (node.x === endX - this.roles["3"].width ||
-                node.x === endX + this.roles["2"].width) &&
-                node.y === endY
-            ) {
-                // resolve node.route
-                this.resolveRoute(node.route);
-                console.log(node.route);
-                console.log(count);
-                return;
+            for (let xrange = 10; xrange >= 0; xrange--) {
+                const endLeft = endX - this.roles["3"].width - xrange;
+                const endRight = endX + this.roles["2"].width + xrange;
+                if (
+                    (node.x === endLeft || node.x === endRight) &&
+                    Math.abs(node.y - endY) < 10
+                ) {
+                    // resolve node.route
+                    this.resolveRoute(node.route);
+                    console.log(node.route);
+                    console.log(count);
+                    return;
+                }
             }
             for (let dir = 0; dir < 3; dir++) {
                 let isCollide: boolean;
@@ -133,7 +133,7 @@ export default class AIController {
                 next.y = (next.y + Storage.sceneHeight) % Storage.sceneHeight;
 
                 const route: Array<{[key: string]: any}> = node.route.slice(0);
-                route.push({ direction: dir });
+                route.push({ x: next.x, y: next.y, jumpSpeed: next.jumpSpeed, direction: dir });
                 next.route = route;
 
                 const flagKey: string = JSON.stringify({ x, y, jumpSpeed, dir });
@@ -192,7 +192,13 @@ export default class AIController {
         let code: string;
         let frames: number = 0;
         let offsets: number = 0;
+        Storage.grids.ctx.beginPath();
         for (const node of route) {
+            const drawX: number = (node.x + this.roles["3"].width / 2 + Storage.sceneWidth) % Storage.sceneWidth;
+            const drawY: number = (node.y + this.roles["3"].height / 2 + Storage.sceneHeight) % Storage.sceneHeight;
+            const radius: number = 6;
+            Storage.grids.ctx.moveTo(drawX + radius, drawY);
+            Storage.grids.ctx.arc(drawX, drawY, 6, 0, 2 * Math.PI);
             switch (temp) {
                 case 0:
                     code = "MoveLeft";
@@ -218,6 +224,8 @@ export default class AIController {
             frames++;
         }
         this.commandList.push({ code, frames, offsets });
+        Storage.grids.ctx.fillStyle = "red";
+        Storage.grids.ctx.fill();
     }
 
     private simulateKeyboardEvent(type: string, code: string) {
@@ -246,6 +254,9 @@ export default class AIController {
      */
     private moveController(code: string, frames: number, offsets: number) {
         if (offsets === 0) {
+            if (this.keyTimer[code]) {
+                cancelAnimationFrame(this.keyTimer[code]);
+            }
             this.simulateKeyboardEvent("keydown", code);
             this.run(code, frames);
         } else {

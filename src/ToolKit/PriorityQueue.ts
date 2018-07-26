@@ -1,3 +1,4 @@
+import Storage from "../Storage";
 /**
  * ToolKit
  * Include some tool in calculation
@@ -68,11 +69,15 @@ export default class PriorityQueue {
     }
 
     private compare(i: number, j: number) {
-        const iToEndX = Math.abs(this.heap[i].x - this.endX);
-        const iToEndY = Math.abs(this.heap[i].y - this.endY);
+        let iToEndX = Math.abs(this.heap[i].x - this.endX);
+        let iToEndY = Math.abs(this.heap[i].y - this.endY);
+        iToEndX = Math.min(iToEndX, Storage.sceneWidth - iToEndX);
+        iToEndY = Math.min(iToEndY, Storage.sceneWidth - iToEndY);
 
-        const jToEndX = Math.abs(this.heap[j].x - this.endX);
-        const jToEndY = Math.abs(this.heap[j].y - this.endY);
+        let jToEndX = Math.abs(this.heap[j].x - this.endX);
+        let jToEndY = Math.abs(this.heap[j].y - this.endY);
+        jToEndX = Math.min(jToEndX, Storage.sceneWidth - jToEndX);
+        jToEndY = Math.min(jToEndY, Storage.sceneWidth - jToEndY);
 
         const iToEndStep = iToEndX / 4 + iToEndY / 190;
         const jToEndStep = jToEndX / 4 + jToEndY / 190;
