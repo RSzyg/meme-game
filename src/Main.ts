@@ -139,8 +139,8 @@ export default class Main {
          */
         const data = {
             roleId: id,
-            width: 54,
-            height: 54,
+            width: 40,
+            height: 40,
             x: (+id - 2) * 600,
             y: Storage.sceneHeight - 54,
             maxHealthPoint: 100,
