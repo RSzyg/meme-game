@@ -53,15 +53,22 @@ export default class AIController {
     }
 
     private randomColorRGBA(): string {
-        let r = this.randomNum(255);
-        let g = this.randomNum(255);
-        let b = this.randomNum(255);
+        const r = this.randomNum(255);
+        const g = this.randomNum(255);
+        const b = this.randomNum(255);
         return `rgba(${r}, ${g}, ${b}, 0.6)`;
     }
     private followHim() {
         let count = 0;
-        const endX = this.roles["2"].x;
-        const endY = this.roles["2"].y;
+
+        const endX = (this.roles["2"].x + Storage.sceneWidth) % Storage.sceneWidth;
+        const endLeft = endX;
+        const endRight = (endX + this.roles["2"].width - 1 + Storage.sceneWidth) % Storage.sceneWidth;
+        const endExtendLeft = (endLeft - 10 + Storage.sceneWidth) % Storage.sceneWidth;
+        const endExtendRight = (endRight + 10 + Storage.sceneWidth) % Storage.sceneWidth;
+
+        const endY = (this.roles["2"].y + Storage.sceneHeight) % Storage.sceneHeight;
+
         const moveSpeed: number = this.roles["3"].moveSpeed;
         const queue: PriorityQueue = new PriorityQueue(endX, endY);
 
@@ -77,19 +84,23 @@ export default class AIController {
         while (queue.size) {
             count++;
             const node: {[key: string]: any} = queue.pop();
-            for (let xrange = 10; xrange >= 0; xrange--) {
-                const endLeft = endX - this.roles["3"].width - xrange;
-                const endRight = endX + this.roles["2"].width + xrange;
-                if (
-                    (node.x === endLeft || node.x === endRight) &&
-                    Math.abs(node.y - endY) < 10
-                ) {
-                    // resolve node.route
-                    this.resolveRoute(node.route);
-                    console.log(node.route);
-                    console.log(count);
-                    return;
-                }
+            const curLeft = (node.x + Storage.sceneWidth) % Storage.sceneWidth;
+            const curRight = (node.x + this.roles["3"].width - 1 + Storage.sceneWidth) % Storage.sceneWidth;
+            const curHead = (node.y + Storage.sceneHeight) % Storage.sceneHeight;
+            const curFoot = (node.y + this.roles["3"].height - 1 + Storage.sceneHeight) % Storage.sceneHeight;
+            if (
+                ((curLeft >= endRight && curLeft <= endExtendRight) ||
+                (endRight > endExtendRight && (curLeft >= endRight || curLeft <= endExtendRight)) ||
+                (curRight >= endExtendLeft && curRight <= endLeft) ||
+                (endExtendLeft > endLeft && (curRight >= endExtendLeft || curRight <= endLeft)))
+                &&
+                node.y === endY
+            ) {
+                // resolve node.route
+                this.resolveRoute(node.route);
+                console.log(node.route);
+                console.log(count);
+                return;
             }
             for (let dir = 0; dir < 3; dir++) {
                 let isCollide: boolean;
@@ -215,7 +226,7 @@ export default class AIController {
             const drawY: number = (node.y + this.roles["3"].height / 2 + Storage.sceneHeight) % Storage.sceneHeight;
             const radius: number = 6;
             Storage.route.ctx.moveTo(drawX + radius, drawY);
-            Storage.route.ctx.arc(drawX, drawY, 6, 0, 2 * Math.PI);
+            Storage.route.ctx.arc(drawX, drawY, radius, 0, 2 * Math.PI);
             switch (temp) {
                 case 0:
                     code = "MoveLeft";
