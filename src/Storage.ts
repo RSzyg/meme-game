@@ -22,6 +22,7 @@ export default class Storage {
     public static images: { [key: string]: HTMLImageElement } = {};
     public static bar: Canvas;
     public static grids: Canvas;
+    public static route: Canvas;
     public static miniMap: Canvas;
     public static miniSelfRole: Canvas;
     public static miniOtherRole: Canvas;

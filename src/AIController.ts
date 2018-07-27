@@ -47,23 +47,16 @@ export default class AIController {
         }
         requestAnimationFrame(() => this.main());
     }
+
     private randomNum(num: number): number {
         return Math.floor(Math.random() * (num + 1));
     }
-    private randomColor16(): string {
-        let r = this.randomNum(255).toString(16);
-        let g = this.randomNum(255).toString(16);
-        let b = this.randomNum(255).toString(16);
-        if (r.length < 2) {
-            r = "0" + r;
-        }
-        if (g.length < 2) {
-            g = "0" + g;
-        }
-        if (b.length < 2) {
-            b = "0" + b;
-        }
-        return "#" + r + g + b;
+
+    private randomColorRGBA(): string {
+        let r = this.randomNum(255);
+        let g = this.randomNum(255);
+        let b = this.randomNum(255);
+        return `rgba(${r}, ${g}, ${b}, 0.6)`;
     }
     private followHim() {
         let count = 0;
@@ -93,11 +86,6 @@ export default class AIController {
                 ) {
                     // resolve node.route
                     this.resolveRoute(node.route);
-                    const context =  Storage.grids.ctx;
-                    context.fillStyle = this.randomColor16();
-                    for (const point of node.route) {
-                        context.fillRect(point.x, point.y, 10, 10);
-                    }
                     console.log(node.route);
                     console.log(count);
                     return;
@@ -168,12 +156,6 @@ export default class AIController {
                     this.routeFlag[flagKey] = true;
                     queue.push_back(next);
                 }
-
-                // const context =  Storage.grids.ctx;
-                // setTimeout(() => {
-                //     context.fillRect(next.x, next.y, 4, 4);
-                // }, time);
-                // time += 5;
             }
         }
         console.log(count);
@@ -226,13 +208,14 @@ export default class AIController {
         let code: string;
         let frames: number = 0;
         let offsets: number = 0;
-        Storage.grids.ctx.beginPath();
+        Storage.route.canvas.height = Storage.route.canvas.height;
+        Storage.route.ctx.beginPath();
         for (const node of route) {
             const drawX: number = (node.x + this.roles["3"].width / 2 + Storage.sceneWidth) % Storage.sceneWidth;
             const drawY: number = (node.y + this.roles["3"].height / 2 + Storage.sceneHeight) % Storage.sceneHeight;
             const radius: number = 6;
-            Storage.grids.ctx.moveTo(drawX + radius, drawY);
-            Storage.grids.ctx.arc(drawX, drawY, 6, 0, 2 * Math.PI);
+            Storage.route.ctx.moveTo(drawX + radius, drawY);
+            Storage.route.ctx.arc(drawX, drawY, 6, 0, 2 * Math.PI);
             switch (temp) {
                 case 0:
                     code = "MoveLeft";
@@ -258,8 +241,8 @@ export default class AIController {
             frames++;
         }
         this.commandList.push({ code, frames, offsets });
-        Storage.grids.ctx.fillStyle = "red";
-        Storage.grids.ctx.fill();
+        Storage.route.ctx.fillStyle = this.randomColorRGBA();
+        Storage.route.ctx.fill();
     }
 
     private simulateKeyboardEvent(type: string, code: string) {
