@@ -82,19 +82,19 @@ export default class PriorityQueue {
         jToEndX = Math.min(jToEndX, Storage.sceneWidth - jToEndX);
         jToEndY = Math.min(jToEndY, Storage.sceneHeight - jToEndY);
 
-        const iToEndStep = iToEndX / 4 + iToEndY / 190;
-        const jToEndStep = jToEndX / 4 + jToEndY / 190;
+        const iToEndStep = iToEndX + iToEndY;
+        const jToEndStep = jToEndX + jToEndY;
 
-        const xishu = 1;
+        const coef = 1;
 
-        // const Hi = xishu * iToEndStep;
-        // const Hj = xishu * jToEndStep;
+        // const Hi = coef * iToEndStep;
+        // const Hj = coef * jToEndStep;
 
         // const Gi = this.heap[i].step; // + this.heap[i].jumpSpeed / 4;
         // const Gj = this.heap[j].step; // + this.heap[j].jumpSpeed / 4;
 
         // return Hi + Gi < Hj + Gj;
-        return  (this.heap[i].route.length + iToEndStep * xishu)
-              < (this.heap[j].route.length + jToEndStep * xishu);
+        return  (this.heap[i].steps + iToEndStep * coef)
+              < (this.heap[j].steps + jToEndStep * coef);
     }
 }

@@ -27,14 +27,22 @@ export default class AIController {
 
     public start() {
         this.main();
-        setInterval(() => {
+        document.addEventListener("click", (event) => {
             if (this.commandList.length === 0) {
                 this.commandList = [];
                 this.keyTimer = {};
                 this.routeFlag = {};
                 this.followHim();
             }
-        }, 3000);
+        });
+        // setInterval(() => {
+        //     if (this.commandList.length === 0) {
+        //         this.commandList = [];
+        //         this.keyTimer = {};
+        //         this.routeFlag = {};
+        //         this.followHim();
+        //     }
+        // }, 3000);
         // this.moveController(2, 100);
         // this.moveController(1, 20);
     }
@@ -59,6 +67,7 @@ export default class AIController {
         return `rgba(${r}, ${g}, ${b}, 0.6)`;
     }
     private followHim() {
+        Storage.findRouteBlock.canvas.height = Storage.findRouteBlock.canvas.height;
         let count = 0;
 
         const endX = (this.roles["2"].x + Storage.sceneWidth) % Storage.sceneWidth;
@@ -100,6 +109,8 @@ export default class AIController {
                 this.resolveRoute(node.route);
                 console.log(node.route);
                 console.log(count);
+                Storage.findRouteBlock.ctx.fillStyle = this.randomColorRGBA();
+                Storage.findRouteBlock.ctx.fill();
                 return;
             }
             for (let dir = 0; dir < 3; dir++) {
@@ -108,7 +119,7 @@ export default class AIController {
                 const y: number = node.y;
                 const inAir: boolean = node.inAir;
                 const jumpSpeed: number = node.jumpSpeed;
-                const steps: number = node.steps + 1;
+                const steps: number = node.steps;
                 const next: {[key: string]: any} = {
                     x,
                     y,
@@ -128,13 +139,14 @@ export default class AIController {
                 next.x = (next.x + Storage.sceneWidth) % Storage.sceneWidth;
                 isCollide = true;
                 if (Math.abs(Storage.dx[dir])) {
+                    next.steps += moveSpeed;
                     while (isCollide) {
                         isCollide = this.collide(dir, next);
                     }
                 }
 
                 if (next.inAir) {
-                    next.steps++;
+                    next.steps += Math.abs(next.jumpSpeed);
                     next.y -= next.jumpSpeed;
                     if (next.jumpSpeed > 0) {
                         isCollide = true;
@@ -166,6 +178,7 @@ export default class AIController {
                 if (!this.routeFlag[flagKey]) {
                     this.routeFlag[flagKey] = true;
                     queue.push_back(next);
+                    Storage.findRouteBlock.ctx.rect(next.x, next.y, 40, 40);
                 }
             }
         }

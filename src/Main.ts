@@ -48,6 +48,8 @@ export default class Main {
         Storage.grids = new Canvas("3", Storage.sceneHeight, Storage.sceneWidth, null);
         /** Create route canvas */
         Storage.route = new Canvas("3", Storage.sceneHeight, Storage.sceneWidth, null);
+        /** Create find route block canvas */
+        Storage.findRouteBlock = new Canvas("3", Storage.sceneHeight, Storage.sceneWidth, null);
         /** Create mini-self-role canvas */
         Storage.miniSelfRole = new Canvas("4", 150, 200, "upperRight");
         /** Create mini-other-role canvas */

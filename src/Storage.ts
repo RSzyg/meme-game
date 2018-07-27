@@ -23,6 +23,7 @@ export default class Storage {
     public static bar: Canvas;
     public static grids: Canvas;
     public static route: Canvas;
+    public static findRouteBlock: Canvas;
     public static miniMap: Canvas;
     public static miniSelfRole: Canvas;
     public static miniOtherRole: Canvas;
