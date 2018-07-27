@@ -18,26 +18,21 @@ export default class AIController {
         this.roles = roles;
         this.commandList = [];
         this.keyTimer = {};
-        // this.magicMap = [];
-        // this.routeFlag = {};
-        // for (let r = 0; r < Storage.fullyMap.length; r++) {
-        //     this.magicMap[r] = Storage.fullyMap[r].slice(0);
-        // }
+        this.magicMap = [];
+        this.routeFlag = {};
+        for (let r = 0; r < Storage.fullyMap.length; r++) {
+            this.magicMap[r] = Storage.fullyMap[r].slice(0);
+        }
     }
 
     public start() {
         this.main();
-        setTimeout(() => {
+        setInterval(() => {
             if (this.commandList.length === 0) {
                 this.commandList = [];
                 this.keyTimer = {};
-                this.magicMap = [];
                 this.routeFlag = {};
-                for (let r = 0; r < Storage.fullyMap.length; r++) {
-                    this.magicMap[r] = Storage.fullyMap[r].slice(0);
-                }
                 this.followHim();
-                this.start();
             }
         }, 3000);
         // this.moveController(2, 100);
