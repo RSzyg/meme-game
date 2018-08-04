@@ -259,14 +259,18 @@ export default class Main {
                     this.roles["2"].verticalTimer = true;
                 }
             }
-            if (this.roles["2"].action === undefined && this.keycount.KeyZ === 1) {
+            if (
+                this.roles["2"].action === undefined &&
+                this.keycount.KeyZ === 1 &&
+                this.roles["2"].attackKeepTimer <= 0
+            ) {
                 /**
                  * key: z
                  * code: KeyZ
                  * action: attack
                  */
                 this.roles["2"].action = "attack";
-                this.roles["2"].attackKeepTimer = 10;
+                this.roles["2"].attackKeepTimer = 30;
                 switch (this.roles["2"].weapon) {
                     case "gun":
                         this.bullets[this.bulletId++] = new Bullet(
@@ -356,14 +360,18 @@ export default class Main {
                     this.roles["3"].verticalTimer = true;
                 }
             }
-            if (this.roles["3"].action === undefined && this.keycount.Attack === 1) {
+            if (
+                this.roles["3"].action === undefined &&
+                this.keycount.Attack === 1 &&
+                this.roles["3"].attackKeepTimer <= 0
+            ) {
                 /**
                  * key: undefined
                  * code: Attack
                  * action: attack
                  */
                 this.roles["3"].action = "attack";
-                this.roles["3"].attackKeepTimer = 10;
+                this.roles["3"].attackKeepTimer = 30;
                 switch (this.roles["3"].weapon) {
                     case "gun":
                         this.bullets[this.bulletId++] = new Bullet(
