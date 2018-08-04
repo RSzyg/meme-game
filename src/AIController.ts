@@ -18,11 +18,8 @@ export default class AIController {
         this.roles = roles;
         this.commandList = [];
         this.keyTimer = {};
-        this.magicMap = [];
         this.routeFlag = {};
-        for (let r = 0; r < Storage.fullyMap.length; r++) {
-            this.magicMap[r] = Storage.fullyMap[r].slice(0);
-        }
+        this.magicMap = [];
     }
 
     public start() {
@@ -32,6 +29,10 @@ export default class AIController {
                 this.commandList = [];
                 this.keyTimer = {};
                 this.routeFlag = {};
+                this.magicMap = [];
+                for (let r = 0; r < Storage.fullyMap.length; r++) {
+                    this.magicMap[r] = Storage.fullyMap[r].slice(0);
+                }
                 this.followHim();
             }
         });
@@ -71,11 +72,6 @@ export default class AIController {
         let count = 0;
 
         const endX = (this.roles["2"].x + Storage.sceneWidth) % Storage.sceneWidth;
-        const endLeft = endX;
-        const endRight = (endX + this.roles["2"].width - 1 + Storage.sceneWidth) % Storage.sceneWidth;
-        const endExtendLeft = (endLeft - 10 + Storage.sceneWidth) % Storage.sceneWidth;
-        const endExtendRight = (endRight + 10 + Storage.sceneWidth) % Storage.sceneWidth;
-
         const endY = (this.roles["2"].y + Storage.sceneHeight) % Storage.sceneHeight;
 
         const moveSpeed: number = this.roles["3"].moveSpeed;
@@ -89,22 +85,22 @@ export default class AIController {
             steps: 0,
             route: [],
         });
-        // let time = 0;
+
         while (queue.size) {
             count++;
             const node: {[key: string]: any} = queue.pop();
-            const curLeft = (node.x + Storage.sceneWidth) % Storage.sceneWidth;
-            const curRight = (node.x + this.roles["3"].width - 1 + Storage.sceneWidth) % Storage.sceneWidth;
-            const curHead = (node.y + Storage.sceneHeight) % Storage.sceneHeight;
-            const curFoot = (node.y + this.roles["3"].height - 1 + Storage.sceneHeight) % Storage.sceneHeight;
-            if (
-                ((curLeft >= endRight && curLeft <= endExtendRight) ||
-                (endRight > endExtendRight && (curLeft >= endRight || curLeft <= endExtendRight)) ||
-                (curRight >= endExtendLeft && curRight <= endLeft) ||
-                (endExtendLeft > endLeft && (curRight >= endExtendLeft || curRight <= endLeft)))
-                &&
-                node.y === endY
-            ) {
+
+            let extendNode = {
+                ...node,
+                x: node.x - 10,
+            };
+            const leftCollision: {[key: string]: boolean} = this.collide(0, extendNode);
+            extendNode = {
+                ...node,
+                x: node.x + 10,
+            };
+            const rightCollision: {[key: string]: boolean} = this.collide(2, extendNode);
+            if (leftCollision.role || rightCollision.role) {
                 // resolve node.route
                 this.resolveRoute(node.route);
                 console.log(node.route);
@@ -114,7 +110,7 @@ export default class AIController {
                 return;
             }
             for (let dir = 0; dir < 3; dir++) {
-                let isCollide: boolean;
+                let isCollide: {[key: string]: boolean};
                 const x: number = node.x;
                 const y: number = node.y;
                 const inAir: boolean = node.inAir;
@@ -137,10 +133,10 @@ export default class AIController {
 
                 next.x += moveSpeed * Storage.dx[dir];
                 next.x = (next.x + Storage.sceneWidth) % Storage.sceneWidth;
-                isCollide = true;
+                isCollide = { wall: true };
                 if (Math.abs(Storage.dx[dir])) {
                     next.steps += moveSpeed;
-                    while (isCollide) {
+                    while (isCollide.wall || isCollide.role) {
                         isCollide = this.collide(dir, next);
                     }
                 }
@@ -149,20 +145,21 @@ export default class AIController {
                     next.steps += Math.abs(next.jumpSpeed);
                     next.y -= next.jumpSpeed;
                     if (next.jumpSpeed > 0) {
-                        isCollide = true;
-                        while (isCollide) {
+                        isCollide = { wall: true };
+                        while (isCollide.wall || isCollide.role) {
                             isCollide = this.collide(1, next);
                         }
                     } else {
-                        isCollide = true;
-                        while (isCollide) {
+                        isCollide = { wall: true };
+                        while (isCollide.wall || isCollide.role) {
                             isCollide = this.collide(3, next);
                         }
                     }
                     next.jumpSpeed--;
                 } else {
                     next.y++;
-                    if (!this.collide(3, next)) {
+                    isCollide = this.collide(3, next);
+                    if (!isCollide.wall && !isCollide.role) {
                         next.y--;
                         next.jumpSpeed = -1;
                         next.inAir = true;
@@ -185,21 +182,29 @@ export default class AIController {
         console.log(count);
     }
 
-    private collide(dir: number, next: {[key: string]: any}): boolean {
+    private collide(dir: number, next: {[key: string]: any}): {[key: string]: boolean} {
         if (Math.abs(Storage.dx[dir])) {
             const nleft: number = (next.x + Storage.sceneWidth) % Storage.sceneWidth;
             const nright: number = (next.x - 1 + this.roles["3"].width + Storage.sceneWidth) % Storage.sceneWidth;
             for (let r = next.y; r < next.y + this.roles["3"].height; r++) {
                 const nr: number = (r + Storage.sceneHeight) % Storage.sceneHeight;
                 if (Storage.dx[dir] > 0) {
-                    if (this.magicMap[nr][nright]) {
+                    if (Storage.fullyMap[nr][nright] && Storage.fullyMap[nr][nright] !== 3) {
                         next.x--;
-                        return true;
+                        if (Storage.fullyMap[nr][nright] === 1) {
+                            return { wall: true, role: false };
+                        } else {
+                            return { wall: false, role: true };
+                        }
                     }
                 } else {
-                    if (this.magicMap[nr][nleft]) {
+                    if (Storage.fullyMap[nr][nleft] && Storage.fullyMap[nr][nleft] !== 3) {
                         next.x++;
-                        return true;
+                        if (Storage.fullyMap[nr][nleft] === 1) {
+                            return { wall: true, role: false };
+                        } else {
+                            return { wall: false, role: true };
+                        }
                     }
                 }
             }
@@ -209,21 +214,29 @@ export default class AIController {
             for (let c = next.x; c < next.x + this.roles["3"].width; c++) {
                 const nc: number = (c + Storage.sceneWidth) % Storage.sceneWidth;
                 if (next.jumpSpeed < 0) {
-                    if (this.magicMap[nfoot][nc]) {
+                    if (Storage.fullyMap[nfoot][nc] && Storage.fullyMap[nfoot][nc] !== 3) {
                         next.y--;
                         next.inAir = false;
-                        return true;
+                        if (Storage.fullyMap[nfoot][nc] === 1) {
+                            return { wall: true, role: false };
+                        } else {
+                            return { wall: false, role: true };
+                        }
                     }
                 } else {
-                    if (this.magicMap[nhead][nc]) {
+                    if (Storage.fullyMap[nhead][nc] && Storage.fullyMap[nhead][nc] !== 3) {
                         next.y++;
                         next.jumpSpeed = 1;
-                        return true;
+                        if (Storage.fullyMap[nhead][nc] === 1) {
+                            return { wall: true, role: false };
+                        } else {
+                            return { wall: false, role: true };
+                        }
                     }
                 }
             }
         }
-        return false;
+        return { wall: false, role: false };
     }
 
     private resolveRoute(route: Array<{[key: string]: any}>) {
