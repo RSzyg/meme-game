@@ -148,7 +148,7 @@ export default class Main {
             x: (+id - 2) * 600,
             y: Storage.sceneHeight - 54,
             maxHealthPoint: 100,
-            attackPower: 3,
+            attackPower: 9,
             attackRange: 12,
             moveSpeed: 4,
             jumpSpeed: 19,
@@ -284,7 +284,9 @@ export default class Main {
                         break;
                     default:
                         for (const aid of this.roles["2"].attackId) {
-                            if (this.roles[aid].action !== "defense") {
+                            if (this.roles[aid].action === "defense") {
+                                this.roles[aid].healthPoint -= this.roles["2"].attackPower / 3;
+                            } else {
                                 this.roles[aid].healthPoint -= this.roles["2"].attackPower;
                             }
                         }
@@ -385,7 +387,9 @@ export default class Main {
                         break;
                     default:
                         for (const aid of this.roles["3"].attackId) {
-                            if (this.roles[aid].action !== "defense") {
+                            if (this.roles[aid].action === "defense") {
+                                this.roles[aid].healthPoint -= this.roles["3"].attackPower / 3;
+                            } else {
                                 this.roles[aid].healthPoint -= this.roles["3"].attackPower;
                             }
                         }
@@ -582,7 +586,9 @@ export default class Main {
                         const id: number = Storage.fullyMap[nr][nright];
                         /** The obj is a bullet */
                         if (id && id !== +obj.hostId) {
-                            if (id !== 1) {
+                            if (id !== 1 && this.roles[id].action === "defense") {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
+                            } else {
                                 this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
                             }
                             return true;
@@ -600,7 +606,9 @@ export default class Main {
                         const id: number = Storage.fullyMap[nr][nleft];
                         /** The obj is a bullet */
                         if (id && id !== +obj.hostId) {
-                            if (id !== 1) {
+                            if (id !== 1 && this.roles[id].action === "defense") {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
+                            } else {
                                 this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
                             }
                             return true;
@@ -628,7 +636,9 @@ export default class Main {
                         const id: number = Storage.fullyMap[nfoot][nc];
                         /** The obj is a bullet */
                         if (id && id !== +obj.hostId) {
-                            if (id !== 1) {
+                            if (id !== 1 && this.roles[id].action === "defense") {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
+                            } else {
                                 this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
                             }
                             return true;
@@ -647,7 +657,9 @@ export default class Main {
                         const id: number = Storage.fullyMap[nhead][nc];
                         /** The obj is a bullet */
                         if (id && id !== +obj.hostId) {
-                            if (id !== 1) {
+                            if (id !== 1 && this.roles[id].action === "defense") {
+                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
+                            } else {
                                 this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
                             }
                             return true;
