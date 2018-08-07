@@ -39,7 +39,7 @@ export default class Bullet {
     ) {
         this.maxDistance = maxDistance;
         this.selfX = this.startX = x;
-        this.selfY = y;
+        this.selfY = y - this.height / 2;
         this.speed = speed;
         this.hostId = hostId;
         if (direction === "left") {

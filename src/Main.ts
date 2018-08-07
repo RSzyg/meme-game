@@ -152,7 +152,7 @@ export default class Main {
             attackRange: 12,
             moveSpeed: 4,
             jumpSpeed: 19,
-            weapon: id === "2" ? null : "gun",
+            weapon: id === "3" ? null : "gun",
         };
         this.roles[id] = new Role(data);
     }
@@ -276,8 +276,8 @@ export default class Main {
                         this.bullets[this.bulletId++] = new Bullet(
                             this.roles["2"].x + 20,
                             this.roles["2"].y + this.roles["2"].height / 2,
-                            300,
                             6,
+                            300,
                             "2",
                             this.roles["2"].horizonDirection,
                         );
@@ -435,13 +435,11 @@ export default class Main {
             if (this.bullets[key]) {
                 this.bullets[key].render();
                 this.bullets[key].move();
-                if (this.collisionJudge(this.bullets[key], this.bullets[key].direction)) {
+                if (
+                    this.collisionJudge(this.bullets[key], this.bullets[key].direction) ||
+                    this.ifOverDistance(key)
+                ) {
                     delete this.bullets[key];
-                }
-                if (this.bullets[key]) {
-                    if (this.ifOverDistance(key)) {
-                        delete this.bullets[key];
-                    }
                 }
             }
         }
