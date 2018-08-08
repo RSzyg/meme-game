@@ -586,10 +586,12 @@ export default class Main {
                         const id: number = Storage.fullyMap[nr][nright];
                         /** The obj is a bullet */
                         if (id && id !== +obj.hostId) {
-                            if (id !== 1 && this.roles[id].action === "defense") {
-                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
-                            } else {
-                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            if (id !== 1 ) {
+                                if (this.roles[id].action === "defense") {
+                                    this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
+                                } else {
+                                    this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                                }
                             }
                             return true;
                         }
@@ -606,10 +608,12 @@ export default class Main {
                         const id: number = Storage.fullyMap[nr][nleft];
                         /** The obj is a bullet */
                         if (id && id !== +obj.hostId) {
-                            if (id !== 1 && this.roles[id].action === "defense") {
-                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
-                            } else {
-                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            if (id !== 1 ) {
+                                if (this.roles[id].action === "defense") {
+                                    this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
+                                } else {
+                                    this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                                }
                             }
                             return true;
                         }
@@ -636,10 +640,12 @@ export default class Main {
                         const id: number = Storage.fullyMap[nfoot][nc];
                         /** The obj is a bullet */
                         if (id && id !== +obj.hostId) {
-                            if (id !== 1 && this.roles[id].action === "defense") {
-                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
-                            } else {
-                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            if (id !== 1 ) {
+                                if (this.roles[id].action === "defense") {
+                                    this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
+                                } else {
+                                    this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                                }
                             }
                             return true;
                         }
@@ -657,10 +663,12 @@ export default class Main {
                         const id: number = Storage.fullyMap[nhead][nc];
                         /** The obj is a bullet */
                         if (id && id !== +obj.hostId) {
-                            if (id !== 1 && this.roles[id].action === "defense") {
-                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
-                            } else {
-                                this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                            if (id !== 1 ) {
+                                if (this.roles[id].action === "defense") {
+                                    this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower / 3;
+                                } else {
+                                    this.roles[id].healthPoint -= this.roles[obj.hostId].attackPower;
+                                }
                             }
                             return true;
                         }
